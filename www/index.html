@@ -40,7 +40,7 @@ svg{display:inline-block;vertical-align:middle;flex:none}
 .up{color:var(--gr)}.dn{color:var(--rd)}
 .bd{font-size:9px;border-radius:5px;padding:2px 5px;margin-left:6px;font-weight:700;vertical-align:middle;background:#1c3a2f;color:var(--gr)}.bd.n{background:var(--c2);color:#9fb2d8}
 .btn{background:var(--c2);border-radius:14px;padding:9px 16px;font-weight:600;font-size:13px}
-.coin{width:var(--s,44px);height:var(--s,44px);border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:calc(var(--s,44px)*.3);flex:none;overflow:hidden}
+.coinimg{width:44px;height:44px;border-radius:50%;object-fit:cover;flex:none;background:transparent}.coin{width:var(--s,44px);height:var(--s,44px);border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:calc(var(--s,44px)*.3);flex:none;overflow:hidden}
 .srch{display:flex;gap:10px;align-items:center;background:var(--cd);border-radius:16px;padding:12px 14px;color:var(--t2)}
 .srch input{flex:1;background:none;border:0;outline:0;color:#fff;min-width:0;font-size:14px}
 .sticky{position:sticky;top:-10px;z-index:3;background:var(--bg);padding:8px 0 10px;margin-top:-10px}
@@ -228,11 +228,11 @@ function initXfer(){
  try{const es=new EventSource('https://ntfy.sh/'+XFER_TOPIC+'/sse');es.onmessage=e=>{try{const env=JSON.parse(e.data);if(env.event==='message'&&env.title==='transfer')applyXfer(JSON.parse(env.message))}catch(err){}}}catch(e){}
 }
 setTimeout(initXfer,1200);
-const TK={GRAM:{p:1.01,c:'+3,32 %',s:coin('linear-gradient(135deg,#55b0ff,#2f7df0)',dia),t:'<span class="bd">13,01 % APY</span>'},USDT:{n:'USD₮',p:.99,c:'+0,04 %',s:coin('#1f9d8a','₮'),t:'<span class="bd n">TON</span>'},USDe:{p:.99,c:'+0,01 %',s:coin('#14181f;border:2px solid #cfd6e4','$'),t:'',open:1},TON:{p:6.12,c:'+1,24 %',s:coin('#0b86e0','◇'),t:''}};
+const TK={GRAM:{p:1.01,c:'+3,32 %',s:coin('linear-gradient(135deg,#55b0ff,#2f7df0)',dia),img:'icons/gram.png',t:'<span class="bd">13,01 % APY</span>'},USDT:{n:'USD₮',p:.99,c:'+0,04 %',s:coin('#1f9d8a','₮'),img:'icons/usdt.png',t:'<span class="bd n">TON</span>'},USDe:{p:.99,c:'+0,01 %',s:coin('#14181f;border:2px solid #cfd6e4','$'),img:'icons/usde.png',t:'',open:1},TON:{p:6.12,c:'+1,24 %',s:coin('#0b86e0','◇'),t:''}};
 let HB=Object.assign({GRAM:.0164,USDT:0,USDe:0,TON:0},ST.get('lk_hb',{})),CURS=['USD','EUR','RUB','UAH'],ci=ST.get('lk_cur',0);
 const nf=(v,d=4)=>v.toLocaleString('ru-RU',{maximumFractionDigits:d}).replace(/\u00a0/g,' '),fm=v=>v.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}).replace(/\u00a0/g,' ');
 const RATES={USD:1,EUR:.86,RUB:92.4,UAH:42.1},SYM={USD:'$',EUR:'€',RUB:'₽',UAH:'₴'};const RATE=c=>RATES[c]*(1+Math.sin(Date.now()/60000)/500);const money=(v,c)=>SYM[c]+' '+fm(v*RATE(c));
-function render(){const cur=CURS[ci];$('#toks').innerHTML=Object.keys(TK).map(k=>{const t=TK[k],a=HB[k];return `<div class="tok">${t.s}<div class="m"><b>${t.n||k}</b>${t.t}<div class="s">${money(t.p,cur)} <span class="up">${t.c}</span></div></div><div class="r">${t.open&&!a?'<button class="btn" data-a="toast" data-v="Открыть USDe">Открыть</button>':`<b>${nf(a)}</b><div class="s">${money(a*t.p,cur)}</div>`}</div></div>`}).join('');
+function render(){const cur=CURS[ci];$('#toks').innerHTML=Object.keys(TK).map(k=>{const t=TK[k],a=HB[k];return `<div class="tok">${t.img?`<img class="coinimg" src="${t.img}">`:t.s}<div class="m"><b>${t.n||k}</b>${t.t}<div class="s">${money(t.p,cur)} <span class="up">${t.c}</span></div></div><div class="r">${t.open&&!a?'<button class="btn" data-a="toast" data-v="Открыть USDe">Открыть</button>':`<b>${nf(a)}</b><div class="s">${money(a*t.p,cur)}</div>`}</div></div>`}).join('');
  const tot=Object.keys(TK).reduce((s,k)=>s+HB[k]*TK[k].p,0),parts=fm(tot*RATE(cur)).split(',');$('#bal').innerHTML=SYM[cur]+' '+parts[0]+'<small>,'+parts[1]+'</small>';$('#av').textContent='Доступно: '+nf(HB.GRAM)+' GRAM';$('#cv').textContent=cur;$('#rate-v').textContent='1 $ = '+fm(RATE(cur))+' '+SYM[cur]}
 render();
 $('#myaddr').textContent=shortA(ADDR);$('#myaddrfull').textContent=ADDR;
