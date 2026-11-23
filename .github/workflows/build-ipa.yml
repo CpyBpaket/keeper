@@ -1,0 +1,47 @@
+name: Build Keeper IPA
+
+# Builds an UNSIGNED .ipa. Re-sign it with a free Apple ID using
+# AltStore or Sideloadly — no paid developer account required.
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build unsigned archive
+        run: |
+          xcodebuild -project Keeper.xcodeproj \
+            -scheme Keeper \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/Keeper.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            archive
+
+      - name: Pack IPA
+        run: |
+          mkdir -p "$RUNNER_TEMP/ipa/Payload"
+          cp -R "$RUNNER_TEMP/Keeper.xcarchive/Products/Applications/Keeper.app" \
+                "$RUNNER_TEMP/ipa/Payload/Keeper.app"
+          cd "$RUNNER_TEMP/ipa"
+          zip -qry "$RUNNER_TEMP/Keeper.ipa" Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Keeper-ipa
+          path: ${{ runner.temp }}/Keeper.ipa
+          if-no-files-found: error
