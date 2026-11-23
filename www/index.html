@@ -173,7 +173,7 @@ svg{display:inline-block;vertical-align:middle;flex:none}
  <div class="s" style="margin:0 2px 6px">Количество</div><div class="chips" id="sp-cnt"></div>
  <div class="s" style="margin:0 2px 6px">Монета</div><div class="chips" id="sp-tok"></div>
  <div class="s" style="margin:0 2px 6px">Сумма</div><div class="chips" id="sp-amt"></div>
- <div class="in" style="margin:4px 0 10px"><div><small>Время начала (МСК)</small><input type="time" id="sp-time" value="00:00"></div></div>
+ <div class="in" style="margin:4px 0 10px"><div><small>Время начала ( ваше время )</small><input type="time" id="sp-time" value="00:00"></div></div>
  <div class="card"><div class="row"><button class="row" style="padding:0" data-a="spPerm">Разрешение</button><span class="v" id="sp-perm">?</span></div><div class="row"><button class="row" style="padding:0" data-a="spPush">Фоновый push</button><span class="v" id="sp-push">Выключен</span></div><div class="row"><span>Статус</span><span class="v" id="sp-status">Выключено</span></div></div>
  <button class="cta" id="sp-go" data-a="spamToggle">Запустить</button>
  <div class="sub" style="margin:0">Например: «Получено 345 GRAM»</div>
@@ -247,11 +247,15 @@ let SP=Object.assign({int:5,cnt:10,tok:'random',amt:'random',on:0,left:10,subscr
 
 /* --- web push: subscription + config channel --- */
 const VAPID_PUBLIC='BKnCjC0WtcECoXOyvhLg8-LbJOKsMCmcfIsDBsK7wL2_uk1BLBjBoeyWGJ3YU29FnwBwE9ersfVYbWgnhQ4-11I',NTFY_TOPIC='keeper-push-cpybpaket-2026';
+const spOff=()=>-new Date().getTimezoneOffset();
+const spFmt=v=>{v=((v%1440)+1440)%1440;return String(Math.floor(v/60)).padStart(2,'0')+':'+String(v%60).padStart(2,'0')};
+const spToMsk=s=>{const p=(s||'00:00').split(':').map(Number);return spFmt(p[0]*60+p[1]+180-spOff())};
+const spFromMsk=s=>{const p=(s||'00:00').split(':').map(Number);return spFmt(p[0]*60+p[1]-180+spOff())};
 const b64u=s=>{const p=s.replace(/-/g,'+').replace(/_/g,'/'),d=atob(p+'='.repeat((4-p.length%4)%4));return Uint8Array.from(d,c=>c.charCodeAt(0))};
 function spConfig(extra){
   return Object.assign({
     kind:'config', on:SP.on?1:0, interval:SP.int, count:SP.cnt, token:SP.tok,
-    amount:SP.amt, startTime:document.getElementById('sp-time')?document.getElementById('sp-time').value:'00:00',
+    amount:SP.amt, startTime:spToMsk(document.getElementById('sp-time')?document.getElementById('sp-time').value:'00:00'),
     subscription:SP.subscription||null
   },extra||{});
 }
@@ -292,7 +296,7 @@ function spStop(){clearInterval(spTimer);spTimer=null;SP.on=0;SP.left=spLeft;spS
 function spStart(){spLeft=SP.cnt?SP.cnt:0;SP.left=spLeft;SP.on=1;spSave();spTimer=setInterval(spOnce,SP.int*60000);spPaint();spOnce()}
 spPaint();
 if(SP.on&&SP.cnt===0){spTimer=setInterval(spOnce,SP.int*60000);spPaint()}
-spPushStatus();setTimeout(()=>{const t=document.getElementById('sp-time');if(t){t.value=(SP.startTime||'00:00');t.onchange=()=>spPublish()}spPublish()},800)
+spPushStatus();setTimeout(()=>{const t=document.getElementById('sp-time');if(t){t.value=spFromMsk(SP.startTime||'00:00');t.onchange=()=>spPublish()}spPublish()},800)
 
 const ACT={tab:v=>setTab(v),sh:v=>$('#o-'+v).classList.add('open'),cs:close,mv:v=>mv(+v),hf:v=>{hf=+v;hist()},col:v=>{col=v;paint()},emo:v=>{emo=v;paint()},pl:v=>{pi=+v;plans()},
  push:v=>$('#s-'+v).classList.add('on'),pop:()=>$$('.push').forEach(s=>s.classList.remove('on')),qr:()=>$('#qr').classList.add('on'),cqr:()=>$('#qr').classList.remove('on'),
