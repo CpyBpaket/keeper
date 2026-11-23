@@ -54,7 +54,7 @@ if (!FORCE) {
   if (sent.time && now - sent.time < (cfg.interval || 5) * 60000) { console.log('Too soon — skip.'); process.exit(0); }
 }
 
-const token = cfg.token === 'random' ? (Math.random() < 0.5 ? 'GRAM' : 'TON') : cfg.token;
+const token = cfg.token === 'random' ? (Math.random() < 0.5 ? 'GRAM' : 'USDT') : cfg.token;
 const amount = cfg.amount === 'random' ? Math.floor(100 + Math.random() * 901) : Number(cfg.amount);
 const body = `Получено ${amount} ${token}`;
 
