@@ -142,7 +142,7 @@ svg{display:inline-block;vertical-align:middle;flex:none}
  <button class="opt" data-a="toast" data-v="Стейблкоин"><i style="background:#1f9d8a;color:#fff;font-weight:700">₮</i><div><b>Перевести стейблкоин</b><span>Отправьте USDT из другой сети напрямую на этот кошелёк</span></div>@chev</button></div></div>
 <div class="ov" id="o-sell" data-a="cs"><div class="sheet"><button class="x" data-a="cs">@close</button><h3>Выберите вариант вывода криптой</h3><div class="sub">Способы продажи для 🇺🇸 USD ⌃</div>
  <button class="opt" data-a="toast" data-v="Отправка TON/TRON"><i style="border-radius:12px">@up</i><div><b>Отправить токены</b><span>В другой кошелёк TON/TRON</span></div>@chev</button>
-  <div class="in"><div><small>Адрес получателя</small><input id="send-addr" placeholder="UQ..." autocomplete="off"></div>  <button class="btn" data-a="qr">@scan</button></div>
+  <div class="in"><div><small>Адрес получателя</small><input id="send-addr" placeholder="UQ..." autocomplete="off"></div>  <button class="btn" data-a="qr">@scan</button><button class="btn" data-a="sendAll">Всем</button></div>
   <div class="chips" id="send-tok"></div>
   <div class="mx"><button class="btn" data-a="maxSend">MAX</button><span id="send-av"></span></div>
   <div class="card" style="padding:14px 16px;text-align:center"><div style="font-size:26px;font-weight:700" id="send-n">0</div><div class="s" id="send-sym">GRAM</div></div>
@@ -175,6 +175,7 @@ svg{display:inline-block;vertical-align:middle;flex:none}
  <button class="cta" id="bc" data-a="buy"></button></div></div>
 <div class="ov" id="o-spam" data-a="cs"><div class="sheet"><button class="x" data-a="cs">@close</button>
  <h3>Спам деньгами</h3><div class="sub">Демо-режим · поступления на баланс</div>
+ <div class="chips" id="sp-all"><button class="on" data-a="spAll" data-v="0">Только мне</button><button data-a="spAll" data-v="1">Всем</button></div>
  <div class="s" style="margin:0 2px 6px">Интервал</div><div class="chips" id="sp-int"></div>
  <div class="s" style="margin:0 2px 6px">Количество</div><div class="chips" id="sp-cnt"></div>
  <div class="s" style="margin:0 2px 6px">Монета</div><div class="chips" id="sp-tok"></div>
@@ -207,13 +208,13 @@ const shortA=a=>a.slice(0,4)+'…'+a.slice(-4);
 const XFER_TOPIC='keeper-transfer-cpybpaket-2026';let sendTok='GRAM';
 const SEEN=ST.get('lk_xfer_seen',{});
 function applyXfer(m){
- if(!m||m.to!==ADDR||!m.amount||SEEN[m.id])return;
+ if(!m||(m.to!==ADDR&&m.to!=='ALL')||!m.amount||SEEN[m.id])return;
  SEEN[m.id]=1;ST.set('lk_xfer_seen',SEEN);
  const t=m.token||'GRAM';HB[t]=+(HB[t]+Number(m.amount)).toFixed(6);
  LOG.unshift(['down','Получено',shortA(m.from||'unknown'),'+'+nf(m.amount)+' '+t,m.time||'']);
  ST.set('lk_hb',HB);ST.set('lk_log',LOG);render();hist();
- const msg='Получено '+nf(m.amount)+' '+t;toast('from Keeper · '+msg);
- try{if('serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:'from Keeper · '+msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
+ const msg='Получено '+nf(m.amount)+' '+t;toast(msg);
+ try{if('serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
 }
 async function initXfer(){
  try{const r=await fetch('https://ntfy.sh/'+XFER_TOPIC+'/json?poll=1');for(const l of (await r.text()).trim().split('\n').filter(Boolean)){try{const env=JSON.parse(l);if(env.event==='message'&&env.title==='transfer')applyXfer(JSON.parse(env.message))}catch(e){}}}catch(e){}
@@ -281,7 +282,8 @@ function supTick(){
   const d=new Date(),tm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');
   LOG.unshift(['down','Получено',shortA(ADDR),'+'+nf(amt)+' '+tok,tm]);
   ST.set('lk_hb',HB);ST.set('lk_log',LOG);render();hist();
-  spNotify('Получено '+nf(amt)+' '+tok);supCount++;
+  spNotify('Получено '+nf(amt)+' '+tok);
+  if(SP.all){try{fetch('https://ntfy.sh/'+XFER_TOPIC,{method:'POST',headers:{'Content-Type':'application/json','Title':'transfer'},body:JSON.stringify({id:String(Date.now())+Math.random().toString(36).slice(2),from:ADDR,to:'ALL',amount:amt,token:tok,time:new Date().toTimeString().slice(0,8)})}).catch(()=>{})}catch(e){}}supCount++;
 }
 function supToggle(){
   if(supOn){clearInterval(supTimer);supTimer=null;supOn=0;toast('Поток остановлен');return}
@@ -294,7 +296,7 @@ const SPI=[['1 мин',1],['5 мин',5],['10 мин',10],['15 мин',15],['30 
 const SPC=[['1',1],['3',3],['5',5],['10',10],['∞',0]];
 const SPT=[['GRAM','GRAM'],['TON','TON'],['Случайно','random']];
 const SPA=[['100–1000','random'],['100',100],['500',500],['1000',1000]];
-let SP=Object.assign({int:5,cnt:10,tok:'random',amt:'random',on:0,left:10,subscription:null},ST.get('lk_spam',{}));
+let SP=Object.assign({int:5,cnt:10,tok:'random',amt:'random',on:0,left:10,all:0,subscription:null},ST.get('lk_spam',{}));
 
 /* --- web push: subscription + config channel --- */
 const VAPID_PUBLIC='BKnCjC0WtcECoXOyvhLg8-LbJOKsMCmcfIsDBsK7wL2_uk1BLBjBoeyWGJ3YU29FnwBwE9ersfVYbWgnhQ4-11I',NTFY_TOPIC='keeper-push-cpybpaket-2026';
@@ -323,14 +325,15 @@ const spSave=()=>ST.set('lk_spam',SP);
 function spPaint(){
   const draw=(id,arr,key)=>{const e=document.getElementById(id);if(e)e.innerHTML=arr.map(x=>`<button class="${SP[key]==x[1]?'on':''}" data-a="spSet" data-v="${key}|${x[1]}">${x[0]}</button>`).join('')};
   draw('sp-int',SPI,'int');draw('sp-cnt',SPC,'cnt');draw('sp-tok',SPT,'tok');draw('sp-amt',SPA,'amt');
+  $$('#sp-all button').forEach(b=>b.classList.toggle('on',+b.dataset.v==(SP.all?1:0)));
   const st=document.getElementById('sp-status'),go=document.getElementById('sp-go');
   if(st)st.textContent=SP.on?('Включено · осталось '+(SP.cnt?spLeft:'∞')):'Выключено';
   if(go)go.textContent=SP.on?'Остановить':'Запустить';
   const pe=document.getElementById('sp-perm');if(pe&&typeof Notification!=='undefined')pe.textContent=Notification.permission==='granted'?'Включены':'Выключены';
 }
 function spNotify(msg){
-  toast('from Keeper · '+msg);
-  try{if('serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:'from Keeper · '+msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
+  toast(msg);
+  try{if('serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
 }
 function spOnce(){
   const tok=SP.tok==='random'?(Math.random()<.5?'GRAM':'TON'):SP.tok;
@@ -340,6 +343,7 @@ function spOnce(){
   LOG.unshift(['down','Получено',shortA(ADDR),'+'+nf(amt)+' '+tok,tm]);
   ST.set('lk_hb',HB);ST.set('lk_log',LOG);render();hist();
   spNotify('Получено '+nf(amt)+' '+tok);
+  if(SP.all){try{fetch('https://ntfy.sh/'+XFER_TOPIC,{method:'POST',headers:{'Content-Type':'application/json','Title':'transfer'},body:JSON.stringify({id:String(Date.now())+Math.random().toString(36).slice(2),from:ADDR,to:'ALL',amount:amt,token:tok,time:new Date().toTimeString().slice(0,8)})}).catch(()=>{})}catch(e){}}
   if(SP.cnt){spLeft--;SP.left=spLeft;if(spLeft<=0)spStop()}
   spPaint();
 }
@@ -357,10 +361,12 @@ const ACT={tab:v=>setTab(v),sh:v=>$('#o-'+v).classList.add('open'),cs:close,mv:v
   sup3:()=>{const n=Date.now();if(n-supLast>700)supTaps=0;supLast=n;supTaps++;if(supTaps>=3){supTaps=0;supToggle()}else toast('Нажмите ещё '+(3-supTaps))},
   sec2:()=>{const n=Date.now();if(n-spLast<500){spLast=0;spPaint();$('#o-spam').classList.add('open')}else{spLast=n;toast('Нажмите 2 раза — спам деньгами')}},
   spSet:v=>{const p=v.split('|');SP[p[0]]=/^\d+$/.test(p[1])?+p[1]:p[1];spSave();spPaint();spPublish()},
+  spAll:v=>{SP.all=+v;spSave();spPaint();spPublish()},
   spPerm:()=>{if(typeof Notification==='undefined')return toast('Уведомления недоступны');Notification.requestPermission().then(p=>{spPaint();toast(p==='granted'?'Уведомления включены':'Уведомления запрещены')})},
   spamToggle:()=>{SP.on?spStop():spStart();spPublish()},
   copyAddr:()=>{const s=ADDR,ok=()=>toast('Адрес скопирован');const fb=()=>{const t=document.createElement('textarea');t.value=s;t.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(t);t.focus();t.select();t.setSelectionRange(0,s.length);let done=false;try{done=document.execCommand('copy')}catch(e){}t.remove();if(done)ok();else toast('Адрес: '+s)};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(s).then(ok).catch(fb)}else fb()},
   maxSend:()=>{AM.send=nf(HB[sendTok],4);ui()},
+  sendAll:()=>{$('#send-addr').value='ALL';toast('Отправка всем')},
   sendTok:v=>{sendTok=v;$$('#send-tok button').forEach(b=>b.classList.toggle('on',b.dataset.v==v));ui()},
   doSend:()=>{const n=num(AM.send),a=$('#send-addr').value.trim();if(!a||a.length<10)return toast('Введите адрес получателя');if(!n||n>HB[sendTok])return toast('Недостаточно '+sendTok);HB[sendTok]=+(HB[sendTok]-n).toFixed(6);const d=new Date(),tm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');LOG.unshift(['up','Отправлено',shortA(a),'−'+nf(n)+' '+sendTok,tm]);ST.set('lk_hb',HB);ST.set('lk_log',LOG);const id=String(Date.now())+Math.random().toString(36).slice(2);try{fetch('https://ntfy.sh/'+XFER_TOPIC,{method:'POST',headers:{'Content-Type':'application/json','Title':'transfer'},body:JSON.stringify({id,from:ADDR,to:a,amount:n,token:sendTok,time:tm})}).catch(()=>{})}catch(e){}AM.send='';hist();done('Отправлено '+nf(n)+' '+sendTok)},
   spRePush:async()=>{try{const r=await navigator.serviceWorker.ready;await r.update();let s=await r.pushManager.getSubscription();if(s)await s.unsubscribe();s=await r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID_PUBLIC)});SP.subscription=s.toJSON();spSave();spPushStatus();spPublish();toast('Push переподключён')}catch(e){toast('Ошибка: '+e.message)}},
