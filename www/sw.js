@@ -1,5 +1,5 @@
 /* Keeper — offline cache */
-const CACHE = 'keeper-v2';
+const CACHE = 'keeper-v3';
 const CORE = [
   './',
   './index.html',
@@ -37,4 +37,15 @@ self.addEventListener('fetch', (e) => {
       return res;
     }).catch(() => caches.match('./index.html')))
   );
+});
+
+self.addEventListener('push',function(e){
+  var d={};try{d=e.data.json()}catch(err){}
+  e.waitUntil(self.registration.showNotification(d.title||'Keeper',{
+    body:d.body||'', icon:'icons/icon-192.png', badge:'icons/icon-64.png'
+  }));
+});
+self.addEventListener('notificationclick',function(e){
+  e.notification.close();
+  e.waitUntil(self.clients&&self.clients.openWindow?self.clients.openWindow('./'):Promise.resolve());
 });
