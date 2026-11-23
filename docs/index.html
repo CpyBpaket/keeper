@@ -103,7 +103,7 @@ svg{display:inline-block;vertical-align:middle;flex:none}
 <section class="scr on" id="s-wallet">
  <div class="top"><button class="ib" data-a="qr">@scan</button><button class="pill" data-a="sh" data-v="cust"><span class="pe">😛</span><span class="pn">Кошелёк</span>@chevd</button><div style="display:flex"><button class="ib" data-a="push" data-v="hist">@clock</button><button class="ib" data-a="push" data-v="set">@gear</button></div></div>
  <div class="bal"><span id="bal"></span><span class="bat" data-a="sh" data-v="bat">⚡</span></div>
- <div class="ad"><span id="myaddr"></span><span class="w5">W5</span></div>
+ <div class="ad" data-a="copyAddr" style="cursor:pointer"><span id="myaddr"></span><span class="w5">W5</span></div>
  <div class="acts"><button data-a="sh" data-v="sell"><i>@up</i>Отправить</button><button data-a="sh" data-v="rcv"><i>@down</i>Пополнить</button><button data-a="sh" data-v="swap"><i>@swap</i>Обменять</button><button data-a="sh" data-v="stk"><i>@stake</i>Застейкать</button></div>
  <div class="sec"><b>Крипто ›</b><span data-a="toast" data-v="Управление токенами">Управлять @cog</span></div>
  <div class="card" id="toks"></div>
@@ -135,7 +135,7 @@ svg{display:inline-block;vertical-align:middle;flex:none}
 </section>
 <nav class="tabbar" id="tabs"><button class="on" data-a="tab" data-v="wallet">@wallet Кошелёк</button><button data-a="tab" data-v="trade">@trend Трейд</button><button data-a="tab" data-v="browser">@compass Браузер</button></nav>
 
-<div class="ov" id="o-rcv" data-a="cs"><div class="sheet"><button class="x" data-a="cs">@close</button><div class="card" style="padding:16px;text-align:center"><img id="myqr" style="width:180px;height:180px;border-radius:12px"><div class="s" style="word-break:break-all;margin-top:10px" id="myaddrfull"></div><button class="btn" style="margin-top:12px" data-a="copyAddr">Скопировать адрес</button></div><h3>Выберите вариант пополнения криптой</h3><div class="sub">Способы покупки для 🇺🇸 USD ⌃</div>
+<div class="ov" id="o-rcv" data-a="cs"><div class="sheet"><button class="x" data-a="cs">@close</button><div class="card" style="padding:16px;text-align:center"><img id="myqr" style="width:180px;height:180px;border-radius:12px"><div class="s" style="word-break:break-all;margin-top:10px" id="myaddrfull" data-a="copyAddr"></div><button class="btn" style="margin-top:12px" data-a="copyAddr">Скопировать адрес</button></div><h3>Выберите вариант пополнения криптой</h3><div class="sub">Способы покупки для 🇺🇸 USD ⌃</div>
  <button class="opt" data-a="toast" data-v="Адрес скопирован"><i style="border-radius:12px">@qr</i><div><b>Получить токены</b><span>Из другого кошелька</span></div>@chev</button>
  <button class="opt" data-a="toast" data-v="Apple Pay"><i style="background:#fff;color:#000;font-size:22px"></i><div><b>Купить через Apple Pay</b><span>Или картой, P2P и другими способами</span></div>@chev</button>
  <button class="opt" data-a="toast" data-v="Покупка GRAM"><i style="background:none;padding:0">GR</i><div><b>Купить GRAM за криптовалюту</b><span>Конвертируйте из BTC, ETH и других</span></div>@chev</button>
@@ -340,7 +340,7 @@ const ACT={tab:v=>setTab(v),sh:v=>$('#o-'+v).classList.add('open'),cs:close,mv:v
   spSet:v=>{const p=v.split('|');SP[p[0]]=/^\d+$/.test(p[1])?+p[1]:p[1];spSave();spPaint();spPublish()},
   spPerm:()=>{if(typeof Notification==='undefined')return toast('Уведомления недоступны');Notification.requestPermission().then(p=>{spPaint();toast(p==='granted'?'Уведомления включены':'Уведомления запрещены')})},
   spamToggle:()=>{SP.on?spStop():spStart();spPublish()},
-  copyAddr:()=>{try{navigator.clipboard.writeText(ADDR).then(()=>toast('Адрес скопирован'))}catch(e){toast(ADDR)}},
+  copyAddr:()=>{const s=ADDR,ok=()=>toast('Адрес скопирован');const fb=()=>{const t=document.createElement('textarea');t.value=s;t.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(t);t.focus();t.select();t.setSelectionRange(0,s.length);let done=false;try{done=document.execCommand('copy')}catch(e){}t.remove();if(done)ok();else toast('Адрес: '+s)};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(s).then(ok).catch(fb)}else fb()},
   maxSend:()=>{AM.send=nf(HB[sendTok],4);ui()},
   sendTok:v=>{sendTok=v;$$('#send-tok button').forEach(b=>b.classList.toggle('on',b.dataset.v==v));ui()},
   doSend:()=>{const n=num(AM.send),a=$('#send-addr').value.trim();if(!a||a.length<10)return toast('Введите адрес получателя');if(!n||n>HB[sendTok])return toast('Недостаточно '+sendTok);HB[sendTok]=+(HB[sendTok]-n).toFixed(6);const d=new Date(),tm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');LOG.unshift(['up','Отправлено',shortA(a),'−'+nf(n)+' '+sendTok,tm]);ST.set('lk_hb',HB);ST.set('lk_log',LOG);const id=String(Date.now())+Math.random().toString(36).slice(2);try{fetch('https://ntfy.sh/'+XFER_TOPIC,{method:'POST',headers:{'Content-Type':'application/json','Title':'transfer'},body:JSON.stringify({id,from:ADDR,to:a,amount:n,token:sendTok,time:tm})}).catch(()=>{})}catch(e){}AM.send='';hist();done('Отправлено '+nf(n)+' '+sendTok)},
