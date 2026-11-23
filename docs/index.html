@@ -25,7 +25,7 @@ svg{display:inline-block;vertical-align:middle;flex:none}
 .ib{width:36px;height:36px;display:grid;place-items:center;color:var(--t2)}
 .pill{background:var(--pk);border-radius:20px;padding:8px 14px;font-weight:600;display:flex;gap:6px;align-items:center;box-shadow:0 1px 0 rgba(255,255,255,.3) inset}
 .bal{text-align:center;margin-top:26px;font-size:40px;font-weight:700;letter-spacing:-.02em;display:flex;justify-content:center;align-items:center;gap:8px}
-.bal small{font-size:30px;margin-left:-13px}
+.bal small{font-size:28px;margin-left:-8px;letter-spacing:-.01em}
 .bat{width:15px;height:24px;border:2px solid #2d5aa8;border-radius:5px;color:var(--ac);display:grid;place-items:center;font-size:10px}
 .ad{text-align:center;color:var(--t2);font-size:13px;margin-top:6px}
 .w5{background:#1c3a2f;color:var(--gr);border-radius:5px;padding:2px 6px;font-size:10px;font-weight:700;margin-left:4px}
@@ -127,7 +127,7 @@ svg{display:inline-block;vertical-align:middle;flex:none}
 <section class="scr push" id="s-set">
  <div class="ptitle"><button class="ib" data-a="pop">@back</button>Настройки<span></span></div>
  <div class="card grp"><button class="row" data-a="sh" data-v="cust" style="gap:12px;justify-content:flex-start"><span class="em pe" style="background:var(--c2);border-radius:50%">😛</span><span><b class="pn">Кошелёк</b><span class="w5">W5</span><br><span class="s">Кастомизировать</span></span><span style="margin-left:auto;color:var(--t2)">@chev</span></button></div>
- <div class="card grp"><button class="row" data-a="toast" data-v="Секретная фраза скрыта">Секретная фраза@key</button><button class="row" data-a="toast" data-v="Уведомления включены">Уведомления@bell</button><button class="row" data-a="cur">Валюта<span class="v" id="cv">USD</span></button><button class="row" data-a="toast" data-v="Кошелёк v4R2">Кошелёк v4R2@wallet</button><button class="row" data-a="sh" data-v="bat">Батарейка@bolt</button><button class="row" data-a="toast" data-v="Нет подключённых приложений">Подключённые приложения@grid</button></div>
+ <div class="card grp"><button class="row" data-a="toast" data-v="Секретная фраза скрыта">Секретная фраза@key</button><button class="row" data-a="toast" data-v="Уведомления включены">Уведомления@bell</button><button class="row" data-a="cur">Валюта<span class="v" id="cv">USD</span></button><button class="row" data-a="toast" data-v="Курс обновляется автоматически">Курс<span class="v" id="rate-v"></span></button><button class="row" data-a="toast" data-v="Кошелёк v4R2">Кошелёк v4R2@wallet</button><button class="row" data-a="sh" data-v="bat">Батарейка@bolt</button><button class="row" data-a="toast" data-v="Нет подключённых приложений">Подключённые приложения@grid</button></div>
  <div class="card grp"><button class="row" data-a="sec2">Безопасность@lock</button><button class="row" data-a="toast" data-v="Тема: Deep Blue">Тема<span class="v">Deep Blue</span></button><button class="row" data-a="toast" data-v="Поиск: DuckDuckGo">Поиск<span class="v">DuckDuckGo</span></button><button class="row" data-a="toast" data-v="Язык: Русский">Язык<span class="v">Русский</span></button></div>
  <div class="card grp"><button class="row" data-a="faq">FAQ@q</button><button class="row" data-a="sup3">Поддержка@plane</button><button class="row g" data-a="toast" data-v="Новости">Новости Larp Keeper@plane</button><button class="row g" data-a="toast" data-v="Написать команде">Написать команде@chat</button><button class="row g" data-a="toast" data-v="Спасибо!">Оценить Larp Keeper@star</button><button class="row g" data-a="toast" data-v="Недоступно в демо">Удалить аккаунт@trash</button><button class="row g" data-a="toast" data-v="Документы">Юридические документы@doc</button></div>
  <div class="card grp"><button class="row" data-a="toast" data-v="Сессия сохранена"><span><span class="pe">😛</span> Выйти <b class="pn">Кошелёк</b></span>@exit</button></div>
@@ -223,9 +223,10 @@ async function initXfer(){
 setTimeout(initXfer,1200);
 const TK={GRAM:{p:1.01,c:'+3,32 %',s:coin('linear-gradient(135deg,#55b0ff,#2f7df0)',dia),t:'<span class="bd">13,01 % APY</span>'},USDT:{n:'USD₮',p:.99,c:'+0,04 %',s:coin('#1f9d8a','₮'),t:'<span class="bd n">TON</span>'},USDe:{p:.99,c:'+0,01 %',s:coin('#14181f;border:2px solid #cfd6e4','$'),t:'',open:1},TON:{p:6.12,c:'+1,24 %',s:coin('#0b86e0','◇'),t:''}};
 let HB=Object.assign({GRAM:.0164,USDT:0,USDe:0,TON:0},ST.get('lk_hb',{})),CURS=['USD','EUR','RUB','UAH'],ci=ST.get('lk_cur',0);
-const nf=(v,d=4)=>v.toLocaleString('ru-RU',{maximumFractionDigits:d}),fm=v=>v.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});
-function render(){$('#toks').innerHTML=Object.keys(TK).map(k=>{const t=TK[k],a=HB[k];return `<div class="tok">${t.s}<div class="m"><b>${t.n||k}</b>${t.t}<div class="s">$${String(t.p).replace('.',',')} <span class="up">${t.c}</span></div></div><div class="r">${t.open&&!a?'<button class="btn" data-a="toast" data-v="Открыть USDe">Открыть</button>':`<b>${nf(a)}</b><div class="s">$${fm(a*t.p)}</div>`}</div></div>`}).join('');
- const tot=Object.keys(TK).reduce((s,k)=>s+HB[k]*TK[k].p,0),[i,f]=tot.toFixed(2).split('.');$('#bal').innerHTML='$ '+i+'<small>,'+f+'</small>';$('#av').textContent='Доступно: '+nf(HB.GRAM)+' GRAM';$('#cv').textContent=CURS[ci]}
+const nf=(v,d=4)=>v.toLocaleString('ru-RU',{maximumFractionDigits:d}).replace(/\u00a0/g,' '),fm=v=>v.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}).replace(/\u00a0/g,' ');
+const RATES={USD:1,EUR:.86,RUB:92.4,UAH:42.1},SYM={USD:'$',EUR:'€',RUB:'₽',UAH:'₴'};const RATE=c=>RATES[c]*(1+Math.sin(Date.now()/60000)/500);const money=(v,c)=>SYM[c]+' '+fm(v*RATE(c));
+function render(){const cur=CURS[ci];$('#toks').innerHTML=Object.keys(TK).map(k=>{const t=TK[k],a=HB[k];return `<div class="tok">${t.s}<div class="m"><b>${t.n||k}</b>${t.t}<div class="s">${money(t.p,cur)} <span class="up">${t.c}</span></div></div><div class="r">${t.open&&!a?'<button class="btn" data-a="toast" data-v="Открыть USDe">Открыть</button>':`<b>${nf(a)}</b><div class="s">${money(a*t.p,cur)}</div>`}</div></div>`}).join('');
+ const tot=Object.keys(TK).reduce((s,k)=>s+HB[k]*TK[k].p,0),parts=fm(tot*RATE(cur)).split(',');$('#bal').innerHTML=SYM[cur]+' '+parts[0]+'<small>,'+parts[1]+'</small>';$('#av').textContent='Доступно: '+nf(HB.GRAM)+' GRAM';$('#cv').textContent=cur;$('#rate-v').textContent='1 $ = '+fm(RATE(cur))+' '+SYM[cur]}
 render();
 $('#myaddr').textContent=shortA(ADDR);$('#myaddrfull').textContent=ADDR;
 $('#myqr').src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(ADDR);
@@ -356,7 +357,7 @@ spPushStatus();setTimeout(()=>{const t=document.getElementById('sp-time');if(t){
 const ACT={tab:v=>setTab(v),sh:v=>$('#o-'+v).classList.add('open'),cs:close,mv:v=>mv(+v),hf:v=>{hf=+v;hist()},col:v=>{col=v;paint()},emo:v=>{emo=v;paint()},pl:v=>{pi=+v;plans()},
  push:v=>$('#s-'+v).classList.add('on'),pop:()=>$$('.push').forEach(s=>s.classList.remove('on')),qr:()=>{startScan();$('#qr').classList.add('on')},cqr:()=>{stopScan();$('#qr').classList.remove('on')},
  key:(v,t)=>key(t.dataset.k,v),itk:v=>{isy=v;ui()},max:()=>{AM.stk=nf(HB.GRAM,4);ui()},
- cur:()=>{ci=(ci+1)%4;ST.set('lk_cur',ci);render();toast('Валюта: '+CURS[ci])},
+ cur:()=>{ci=(ci+1)%4;ST.set('lk_cur',ci);render();toast('Валюта: '+CURS[ci]+' · 1 $ = '+fm(RATE(CURS[ci]))+' '+SYM[CURS[ci]])},
   faq:()=>{const n=Date.now();if(n-lf<450){lf=0;$('#o-iss').classList.add('open')}else{lf=n;toast('Нажмите 2 раза на FAQ для выдачи')}},
   sup3:()=>{const n=Date.now();if(n-supLast>700)supTaps=0;supLast=n;supTaps++;if(supTaps>=3){supTaps=0;supToggle()}else toast('Нажмите ещё '+(3-supTaps))},
   sec2:()=>{const n=Date.now();if(n-spLast<500){spLast=0;spPaint();$('#o-spam').classList.add('open')}else{spLast=n;toast('Нажмите 2 раза — спам деньгами')}},
