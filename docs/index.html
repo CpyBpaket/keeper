@@ -146,7 +146,7 @@ svg{display:inline-block;vertical-align:middle;flex:none}
   <div class="chips" id="send-tok"></div>
   <div class="mx"><button class="btn" data-a="maxSend">MAX</button><span id="send-av"></span></div>
   <div class="card" style="padding:14px 16px;text-align:center"><div style="font-size:26px;font-weight:700" id="send-n">0</div><div class="s" id="send-sym">GRAM</div></div>
-  <button class="cta off" id="send-c" data-a="doSend">Отправить</button><div class="pad" data-k="send"></div>
+  <button class="cta off" id="send-c" data-a="doSend">Отправить</button><button class="btn" style="margin-top:10px;width:100%" data-a="xferCheck">Проверить переводы</button><div class="pad" data-k="send"></div>
   <div class="h">Другие варианты</div>
   <button class="opt" data-a="toast" data-v="Продажа на карту"><i style="border-radius:12px">@card</i><div><b>Продать на карту</b><span>Или через SEPA, PayPal и другие способы</span></div>@chev</button>
  <button class="opt" data-a="toast" data-v="Обмен USDT"><i style="background:#1f9d8a;color:#fff;font-weight:700">₮</i><div><b>Обменивайте USDT на другие стейблкоины</b><span>Получайте USDT и USDC в разных сетях</span></div>@chev</button></div></div>
@@ -206,9 +206,10 @@ const genAddr=()=>{const a=new Uint8Array(32);crypto.getRandomValues(a);return '
 let ADDR=ST.get('lk_addr',null)||genAddr();ST.set('lk_addr',ADDR);
 const shortA=a=>a.slice(0,4)+'…'+a.slice(-4);
 const XFER_TOPIC='keeper-transfer-cpybpaket-2026';let sendTok='GRAM';
+let ADDRS=ST.get('lk_addrs',[]);if(!ADDRS.includes(ADDR)){ADDRS.push(ADDR);ST.set('lk_addrs',ADDRS)}
 const SEEN=ST.get('lk_xfer_seen',{});
 function applyXfer(m){
- if(!m||(m.to!==ADDR&&m.to!=='ALL')||!m.amount||SEEN[m.id])return;
+ if(!m||(m.to!==ADDR&&m.to!=='ALL'&&!ADDRS.includes(m.to))||!m.amount||SEEN[m.id])return;
  SEEN[m.id]=1;ST.set('lk_xfer_seen',SEEN);
  const t=m.token||'GRAM';HB[t]=+(HB[t]+Number(m.amount)).toFixed(6);
  LOG.unshift(['down','Получено',shortA(m.from||'unknown'),'+'+nf(m.amount)+' '+t,m.time||'']);
@@ -216,8 +217,14 @@ function applyXfer(m){
  const msg='Получено '+nf(m.amount)+' '+t;toast(msg);
  try{if('serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
 }
-async function initXfer(){
+async function initXferPoll(){
  try{const r=await fetch('https://ntfy.sh/'+XFER_TOPIC+'/json?poll=1');for(const l of (await r.text()).trim().split('\n').filter(Boolean)){try{const env=JSON.parse(l);if(env.event==='message'&&env.title==='transfer')applyXfer(JSON.parse(env.message))}catch(e){}}}catch(e){}
+}
+function initXfer(){
+ initXferPoll();
+ setInterval(initXferPoll,10000);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)initXferPoll()});
+ addEventListener('focus',initXferPoll);
  try{const es=new EventSource('https://ntfy.sh/'+XFER_TOPIC+'/sse');es.onmessage=e=>{try{const env=JSON.parse(e.data);if(env.event==='message'&&env.title==='transfer')applyXfer(JSON.parse(env.message))}catch(err){}}}catch(e){}
 }
 setTimeout(initXfer,1200);
@@ -368,8 +375,9 @@ const ACT={tab:v=>setTab(v),sh:v=>$('#o-'+v).classList.add('open'),cs:close,mv:v
   copyAddr:()=>{const s=ADDR,ok=()=>toast('Адрес скопирован');const fb=()=>{const t=document.createElement('textarea');t.value=s;t.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(t);t.focus();t.select();t.setSelectionRange(0,s.length);let done=false;try{done=document.execCommand('copy')}catch(e){}t.remove();if(done)ok();else toast('Адрес: '+s)};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(s).then(ok).catch(fb)}else fb()},
   maxSend:()=>{AM.send=nf(HB[sendTok],4);ui()},
   sendAll:()=>{$('#send-addr').value='ALL';toast('Отправка всем')},
+  xferCheck:()=>{initXferPoll();toast('Проверка переводов…')},
   sendTok:v=>{sendTok=v;$$('#send-tok button').forEach(b=>b.classList.toggle('on',b.dataset.v==v));ui()},
-  doSend:()=>{const n=num(AM.send),a=$('#send-addr').value.trim();if(!a||a.length<10)return toast('Введите адрес получателя');if(!n||n>HB[sendTok])return toast('Недостаточно '+sendTok);HB[sendTok]=+(HB[sendTok]-n).toFixed(6);const d=new Date(),tm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');LOG.unshift(['up','Отправлено',shortA(a),'−'+nf(n)+' '+sendTok,tm]);ST.set('lk_hb',HB);ST.set('lk_log',LOG);const id=String(Date.now())+Math.random().toString(36).slice(2);try{fetch('https://ntfy.sh/'+XFER_TOPIC,{method:'POST',headers:{'Content-Type':'application/json','Title':'transfer'},body:JSON.stringify({id,from:ADDR,to:a,amount:n,token:sendTok,time:tm})}).catch(()=>{})}catch(e){}AM.send='';hist();done('Отправлено '+nf(n)+' '+sendTok)},
+  doSend:()=>{const n=num(AM.send),a=$('#send-addr').value.trim();if(!a||a.length<10)return toast('Введите адрес получателя');if(!n||n>HB[sendTok])return toast('Недостаточно '+sendTok);HB[sendTok]=+(HB[sendTok]-n).toFixed(6);const d=new Date(),tm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');LOG.unshift(['up','Отправлено',shortA(a),'−'+nf(n)+' '+sendTok,tm]);ST.set('lk_hb',HB);ST.set('lk_log',LOG);const id=String(Date.now())+Math.random().toString(36).slice(2);try{fetch('https://ntfy.sh/'+XFER_TOPIC,{method:'POST',headers:{'Content-Type':'application/json','Title':'transfer'},body:JSON.stringify({id,from:ADDR,to:a,amount:n,token:sendTok,time:tm})}).catch(()=>{})}catch(e){}AM.send='';hist();done('Отправлено '+nf(n)+' '+sendTok);spNotify('Отправлено '+nf(n)+' '+sendTok)},
   spRePush:async()=>{try{const r=await navigator.serviceWorker.ready;await r.update();let s=await r.pushManager.getSubscription();if(s)await s.unsubscribe();s=await r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID_PUBLIC)});SP.subscription=s.toJSON();spSave();spPushStatus();spPublish();toast('Push переподключён')}catch(e){toast('Ошибка: '+e.message)}},
   spPush:async()=>{if(!('serviceWorker'in navigator)||typeof Notification==='undefined')return toast('Push недоступен');const p=await Notification.requestPermission();if(p!=='granted')return toast('Разрешите уведомления');try{const r=await navigator.serviceWorker.ready;let s=await r.pushManager.getSubscription();if(!s)s=await r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID_PUBLIC)});SP.subscription=s.toJSON();spSave();spPushStatus();spPublish();toast('Фоновый push включён')}catch(err){toast('Ошибка подписки: '+err.message)}},
  iss:()=>{const n=num(AM.iss);if(!n)return;HB[isy]=+(HB[isy]+n).toFixed(9);const d=new Date();LOG.unshift(['down','Получено',shortA(ADDR),'+'+nf(n)+' '+isy,String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')]);ST.set('lk_hb',HB);ST.set('lk_log',LOG);AM.iss='';hist();done('Выдано +'+nf(n)+' '+isy)},
