@@ -1,5 +1,5 @@
 /* Keeper — offline cache */
-const CACHE = 'keeper-v1';
+const CACHE = 'keeper-v2';
 const CORE = [
   './',
   './index.html',
