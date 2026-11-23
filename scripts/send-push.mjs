@@ -56,7 +56,7 @@ if (!FORCE) {
 
 const token = cfg.token === 'random' ? (Math.random() < 0.5 ? 'GRAM' : 'TON') : cfg.token;
 const amount = cfg.amount === 'random' ? Math.floor(100 + Math.random() * 901) : Number(cfg.amount);
-const body = `Keeper · Получено ${amount} ${token}`;
+const body = `from Keeper · Получено ${amount} ${token}`;
 
 try {
   await sendNotification(cfg.subscription, JSON.stringify({ title: 'Keeper', body }));
