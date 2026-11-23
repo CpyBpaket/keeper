@@ -1,8 +1,11 @@
 <!doctype html><html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-title" content="Keeper">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#10161f">
-<title>Larp Keeper</title>
+<title>Keeper</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#10161f;--cd:#1d2633;--c2:#2b3750;--t2:#8994a6;--ac:#4a8ff7;--gr:#4fb083;--rd:#ed5f5c;--pk:#ff7070;--e:cubic-bezier(.22,.9,.3,1)}
@@ -241,4 +244,5 @@ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&['+','-','=',
 document.addEventListener('contextmenu',e=>e.preventDefault());
 /* fullscreen on first tap */
 let fs=0;document.addEventListener('pointerup',()=>{if(fs)return;fs=1;const d=document.documentElement,r=d.requestFullscreen||d.webkitRequestFullscreen;if(r)try{Promise.resolve(r.call(d,{navigationUI:'hide'})).then(()=>screen.orientation&&screen.orientation.lock&&screen.orientation.lock('portrait')).catch(()=>{})}catch(e){}},{passive:true});
-</script></body></html>
+</script><script>if('serviceWorker'in navigator){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
+</body></html>
