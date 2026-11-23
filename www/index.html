@@ -228,8 +228,8 @@ function initXfer(){
  try{const es=new EventSource('https://ntfy.sh/'+XFER_TOPIC+'/sse');es.onmessage=e=>{try{const env=JSON.parse(e.data);if(env.event==='message'&&env.title==='transfer')applyXfer(JSON.parse(env.message))}catch(err){}}}catch(e){}
 }
 setTimeout(initXfer,1200);
-const TK={GRAM:{p:1.01,c:'+3,32 %',s:coin('linear-gradient(135deg,#55b0ff,#2f7df0)',dia),img:'icons/gram.png',t:'<span class="bd">13,01 % APY</span>'},USDT:{n:'USD₮',p:.99,c:'+0,04 %',s:coin('#1f9d8a','₮'),img:'icons/usdt.png',t:'<span class="bd n">TON</span>'},USDe:{p:.99,c:'+0,01 %',s:coin('#14181f;border:2px solid #cfd6e4','$'),img:'icons/usde.png',t:'',open:1},TON:{p:6.12,c:'+1,24 %',s:coin('#0b86e0','◇'),t:''}};
-let HB=Object.assign({GRAM:.0164,USDT:0,USDe:0,TON:0},ST.get('lk_hb',{})),CURS=['USD','EUR','RUB','UAH'],ci=ST.get('lk_cur',0);
+const TK={GRAM:{p:1.01,c:'+3,32 %',s:coin('linear-gradient(135deg,#55b0ff,#2f7df0)',dia),img:'icons/gram.png',t:'<span class="bd">13,01 % APY</span>'},USDT:{n:'USD₮',p:.99,c:'+0,04 %',s:coin('#1f9d8a','₮'),img:'icons/usdt.png',t:'<span class="bd n">TON</span>'},USDe:{p:.99,c:'+0,01 %',s:coin('#14181f;border:2px solid #cfd6e4','$'),img:'icons/usde.png',t:'',open:1}};
+let HB=Object.assign({GRAM:.0164,USDT:0,USDe:0},ST.get('lk_hb',{}));delete HB.TON,CURS=['USD','EUR','RUB','UAH'],ci=ST.get('lk_cur',0);
 const nf=(v,d=4)=>v.toLocaleString('ru-RU',{maximumFractionDigits:d}).replace(/\u00a0/g,' '),fm=v=>v.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}).replace(/\u00a0/g,' ');
 const RATES={USD:1,EUR:.86,RUB:92.4,UAH:42.1},SYM={USD:'$',EUR:'€',RUB:'₽',UAH:'₴'};const RATE=c=>RATES[c]*(1+Math.sin(Date.now()/60000)/500);const money=(v,c)=>SYM[c]+' '+fm(v*RATE(c));
 function render(){const cur=CURS[ci];$('#toks').innerHTML=Object.keys(TK).map(k=>{const t=TK[k],a=HB[k];return `<div class="tok">${t.img?`<img class="coinimg" src="${t.img}">`:t.s}<div class="m"><b>${t.n||k}</b>${t.t}<div class="s">${money(t.p,cur)} <span class="up">${t.c}</span></div></div><div class="r">${t.open&&!a?'<button class="btn" data-a="toast" data-v="Открыть USDe">Открыть</button>':`<b>${nf(a)}</b><div class="s">${money(a*t.p,cur)}</div>`}</div></div>`}).join('');
@@ -237,7 +237,7 @@ function render(){const cur=CURS[ci];$('#toks').innerHTML=Object.keys(TK).map(k=
 render();
 $('#myaddr').textContent=shortA(ADDR);$('#myaddrfull').textContent=ADDR;
 $('#myqr').src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(ADDR);
-$('#send-tok').innerHTML=['GRAM','TON'].map(t=>`<button class="${t==sendTok?'on':''}" data-a="sendTok" data-v="${t}">${t}</button>`).join('');
+$('#send-tok').innerHTML=['GRAM','USDT'].map(t=>`<button class="${t==sendTok?'on':''}" data-a="sendTok" data-v="${t}">${t}</button>`).join('');
 let scanStream=null,scanRAF=null;
 async function startScan(){try{const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});scanStream=s;const v=$('#scanvid');v.srcObject=s;await v.play();const loop=()=>{if(!$('#qr').classList.contains('on')){stopScan();return};const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;const x=c.getContext('2d');x.drawImage(v,0,0,c.width,c.height);const im=x.getImageData(0,0,c.width,c.height);const code=typeof jsQR==='function'?jsQR(im.data,im.width,im.height):null;if(code){$('#send-addr').value=code.data;stopScan();$('#qr').classList.remove('on');toast('Адрес считан');return};scanRAF=requestAnimationFrame(loop)};loop()}catch(e){toast('Камера недоступна')}}
 function stopScan(){if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}if(scanRAF){cancelAnimationFrame(scanRAF);scanRAF=null}}
@@ -302,7 +302,7 @@ function supToggle(){
 /* --- demo: spam money (double tap on Security) --- */
 const SPI=[['1 мин',1],['5 мин',5],['10 мин',10],['15 мин',15],['30 мин',30]];
 const SPC=[['1',1],['3',3],['5',5],['10',10],['∞',0]];
-const SPT=[['GRAM','GRAM'],['TON','TON'],['Случайно','random']];
+const SPT=[['GRAM','GRAM'],['USDT','USDT'],['Случайно','random']];
 const SPA=[['100–1000','random'],['100',100],['500',500],['1000',1000]];
 let SP=Object.assign({int:5,cnt:10,tok:'random',amt:'random',on:0,left:10,all:0,subscription:null},ST.get('lk_spam',{}));
 
@@ -344,7 +344,7 @@ function spNotify(msg){
   try{if('serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
 }
 function spOnce(){
-  const tok=SP.tok==='random'?(Math.random()<.5?'GRAM':'TON'):SP.tok;
+  const tok=SP.tok==='random'?(Math.random()<.5?'GRAM':'USDT'):SP.tok;
   const amt=SP.amt==='random'?Math.floor(100+Math.random()*901):Number(SP.amt);
   HB[tok]=+(HB[tok]+amt).toFixed(6);
   const d=new Date(),tm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
