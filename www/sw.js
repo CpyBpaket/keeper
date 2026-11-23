@@ -1,5 +1,5 @@
 /* Keeper — offline cache */
-const CACHE = 'keeper-v3';
+const CACHE = 'keeper-v4';
 const CORE = [
   './',
   './index.html',
@@ -30,6 +30,16 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   // Never try to cache cross-origin font/style requests — just pass them through.
   if (new URL(req.url).origin !== self.location.origin) return;
+  if (req.mode === 'navigate' || (req.headers.get('accept') || '').includes('text/html')) {
+    e.respondWith(
+      fetch(req).then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+        return res;
+      }).catch(() => caches.match(req).then((hit) => hit || caches.match('./index.html')))
+    );
+    return;
+  }
   e.respondWith(
     caches.match(req).then((hit) => hit || fetch(req).then((res) => {
       const copy = res.clone();
