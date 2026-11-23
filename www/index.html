@@ -278,8 +278,8 @@ function spPaint(){
   const pe=document.getElementById('sp-perm');if(pe&&typeof Notification!=='undefined')pe.textContent=Notification.permission==='granted'?'Включены':'Выключены';
 }
 function spNotify(msg){
-  toast(msg);
-  try{if(!SP.subscription&&'serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
+  toast('Keeper · '+msg);
+  try{if(!SP.subscription&&'serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:'Keeper · '+msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
 }
 function spOnce(){
   const tok=SP.tok==='random'?(Math.random()<.5?'GRAM':'TON'):SP.tok;
