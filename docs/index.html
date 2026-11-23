@@ -15,7 +15,7 @@ body{font:500 14px/1.3 Montserrat,-apple-system,Roboto,sans-serif;color:#fff;-we
 input{user-select:text;-webkit-user-select:text;font:inherit;touch-action:manipulation}
 button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer;touch-action:manipulation;transition:transform .15s,opacity .2s}
 button:active{transform:scale(.96);opacity:.8}
-svg{display:block}
+svg{display:inline-block;vertical-align:middle;flex:none}
 #app{position:fixed;top:0;bottom:0;left:50%;width:100%;max-width:480px;transform:translateX(-50%);height:100vh;height:100dvh;background:var(--bg);overflow:hidden}
 .scr{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top) + 10px) 16px calc(90px + env(safe-area-inset-bottom));display:none}
 .scr.on{display:block}
@@ -117,7 +117,7 @@ svg{display:block}
  <div class="card" style="padding-bottom:4px"><div class="seg"><button class="on" data-a="mv" data-v="0">Лидеры роста</button><button data-a="mv" data-v="1">Лидеры падения</button></div><div class="g4" id="g4"></div></div>
 </section>
 <section class="scr" id="s-browser">
- <div class="chips"><button class="on" data-a="toast" data-v="Витрина">Витрина</button><button style="background:none" data-a="toast" data-v="Подключённые">Подключенные</button></div>
+ <div class="chips"><button class="on" data-a="toast" data-v="Витрина">Витрина</button><button style="background:none" data-a="toast" data-v="Подключённые">Подключённые</button></div>
  <div class="ban"><div data-a="toast" data-v="STON.fi"><i class="o"></i><span class="ai" style="background:#2a64f3;width:44px;height:44px;border-radius:14px;z-index:1">S</span><div style="z-index:1"><b>STON.fi</b><div style="font-size:12px;opacity:.9">Кросс-чейн обмены. Без бриджей. Без CEX.</div></div></div><div style="background:linear-gradient(135deg,#7a2fc0,#2a1250)"></div></div>
  <div class="card tok"><span class="ai" style="width:44px;height:44px;background:#1b1b2a">≋</span><div class="m"><b>Tokenstore</b><div class="s">Подарочные карты с GRAM…</div></div><button class="btn" data-a="toast" data-v="Открыть Tokenstore">Открыть</button></div>
  <div class="g4" id="ap0" style="padding:16px 0 0"></div><div id="apps"></div>
@@ -128,7 +128,7 @@ svg{display:block}
  <div class="ptitle"><button class="ib" data-a="pop">@back</button>Настройки<span></span></div>
  <div class="card grp"><button class="row" data-a="sh" data-v="cust" style="gap:12px;justify-content:flex-start"><span class="em pe" style="background:var(--c2);border-radius:50%">😛</span><span><b class="pn">Кошелёк</b><span class="w5">W5</span><br><span class="s">Кастомизировать</span></span><span style="margin-left:auto;color:var(--t2)">@chev</span></button></div>
  <div class="card grp"><button class="row" data-a="toast" data-v="Секретная фраза скрыта">Секретная фраза@key</button><button class="row" data-a="toast" data-v="Уведомления включены">Уведомления@bell</button><button class="row" data-a="cur">Валюта<span class="v" id="cv">USD</span></button><button class="row" data-a="toast" data-v="Кошелёк v4R2">Кошелёк v4R2@wallet</button><button class="row" data-a="sh" data-v="bat">Батарейка@bolt</button><button class="row" data-a="toast" data-v="Нет подключённых приложений">Подключённые приложения@grid</button></div>
- <div class="card grp"><button class="row" data-a="toast" data-v="Безопасность">Безопасность@lock</button><button class="row" data-a="toast" data-v="Тема: Deep Blue">Тема<span class="v">Deep Blue</span></button><button class="row" data-a="toast" data-v="Поиск: DuckDuckGo">Поиск<span class="v">DuckDuckGo</span></button><button class="row" data-a="toast" data-v="Язык: Русский">Язык<span class="v">Русский</span></button></div>
+ <div class="card grp"><button class="row" data-a="sec2">Безопасность@lock</button><button class="row" data-a="toast" data-v="Тема: Deep Blue">Тема<span class="v">Deep Blue</span></button><button class="row" data-a="toast" data-v="Поиск: DuckDuckGo">Поиск<span class="v">DuckDuckGo</span></button><button class="row" data-a="toast" data-v="Язык: Русский">Язык<span class="v">Русский</span></button></div>
  <div class="card grp"><button class="row" data-a="faq">FAQ@q</button><button class="row" data-a="toast" data-v="Поддержка">Поддержка@plane</button><button class="row g" data-a="toast" data-v="Новости">Новости Larp Keeper@plane</button><button class="row g" data-a="toast" data-v="Написать команде">Написать команде@chat</button><button class="row g" data-a="toast" data-v="Спасибо!">Оценить Larp Keeper@star</button><button class="row g" data-a="toast" data-v="Недоступно в демо">Удалить аккаунт@trash</button><button class="row g" data-a="toast" data-v="Документы">Юридические документы@doc</button></div>
  <div class="card grp"><button class="row" data-a="toast" data-v="Сессия сохранена"><span><span class="pe">😛</span> Выйти <b class="pn">Кошелёк</b></span>@exit</button></div>
  <div style="text-align:center;color:var(--t2);font-size:12px;margin-top:22px"><div style="color:var(--ac);display:grid;place-items:center">@dia</div><b style="color:#fff;display:block;margin:6px 0 2px">Larp Keeper</b>Version 26.11.3(1938)</div>
@@ -163,10 +163,20 @@ svg{display:block}
  <div class="in"><div><small>Имя кошелька</small><input id="nm" maxlength="24" autocomplete="off"></div><span class="em" id="pe3">😛</span></div><div class="cols" id="cols"></div><div class="eg" id="eg"></div></div></div>
 <div class="ov" id="o-bat" data-a="cs"><div class="sheet"><button class="x" data-a="cs">@close</button>
  <div style="display:grid;place-items:center;margin-top:14px"><div style="width:54px;height:82px;border:3px solid var(--c2);border-radius:14px;display:grid;place-items:center;color:var(--ac);font-size:30px">⚡</div></div>
- <h3 style="margin-top:14px">Батарейка Larp Keeper</h3><div class="sub" style="margin-bottom:14px">Легко меняйте и отправляйте TON токены и платите меньше комиссии в TRC-20<br><span style="color:var(--ac);font-weight:600;display:inline-block;margin-top:8px">Поддерживаемые транзакции</span></div>
+ <h3 style="margin-top:14px">Батарейка Larp Keeper</h3><div class="sub" style="margin-bottom:14px">Легко меняйте и отправляйте TON-токены и платите меньше комиссии в TRC-20<br><span style="color:var(--ac);font-weight:600;display:inline-block;margin-top:8px">Поддерживаемые транзакции</span></div>
  <div class="card" id="plans"></div>
  <button class="opt" style="margin-top:10px" data-a="toast" data-v="App Store"><i style="background:#fff;color:#000;font-size:20px"></i><div><b>Оплата через App Store</b><span>Покупка в приложении</span></div>@chev</button>
  <button class="cta" id="bc" data-a="buy"></button></div></div>
+<div class="ov" id="o-spam" data-a="cs"><div class="sheet"><button class="x" data-a="cs">@close</button>
+ <h3>Спам деньгами</h3><div class="sub">Демо-режим · поступления на баланс</div>
+ <div class="s" style="margin:0 2px 6px">Интервал</div><div class="chips" id="sp-int"></div>
+ <div class="s" style="margin:0 2px 6px">Количество</div><div class="chips" id="sp-cnt"></div>
+ <div class="s" style="margin:0 2px 6px">Монета</div><div class="chips" id="sp-tok"></div>
+ <div class="s" style="margin:0 2px 6px">Сумма</div><div class="chips" id="sp-amt"></div>
+ <div class="card"><div class="row"><button class="row" style="padding:0" data-a="spPerm">Уведомления</button><span class="v" id="sp-perm">?</span></div><div class="row"><span>Статус</span><span class="v" id="sp-status">Выключено</span></div></div>
+ <button class="cta" id="sp-go" data-a="spamToggle">Запустить</button>
+ <div class="sub" style="margin:0">Например: «Получено 345 GRAM»</div>
+</div></div>
 <div class="qr" id="qr"><button class="ib" style="position:absolute;left:12px;top:calc(env(safe-area-inset-top) + 14px);color:#fff" data-a="cqr">@chevd</button>
  <div style="position:absolute;top:26%;left:0;right:0;font-size:22px;font-weight:700">Отсканируйте QR-код</div>
  <div style="position:absolute;left:50%;top:36%;width:290px;height:250px;transform:translateX(-50%)"><i class="cn" style="left:0;top:0;border-right:0;border-bottom:0;border-radius:10px 0 0 0"></i><i class="cn" style="right:0;top:0;border-left:0;border-bottom:0;border-radius:0 10px 0 0"></i><i class="cn" style="left:0;bottom:0;border-right:0;border-top:0;border-radius:0 0 0 10px"></i><i class="cn" style="right:0;bottom:0;border-left:0;border-top:0;border-radius:0 0 10px 0"></i></div>
@@ -182,8 +192,8 @@ const dia='<svg width="55%" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke
 const coin=(bg,g,s=44)=>`<span class="coin" style="--s:${s}px;background:${bg}">${g}</span>`;
 $$('.opt i').forEach(i=>{if(i.textContent=='GR')i.outerHTML=coin('linear-gradient(135deg,#55b0ff,#2f7df0)',dia,40)});
 const ST={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-const TK={GRAM:{p:1.01,c:'+3,32 %',s:coin('linear-gradient(135deg,#55b0ff,#2f7df0)',dia),t:'<span class="bd">13,01 % APY</span>'},USDT:{n:'USD₮',p:.99,c:'+0,04 %',s:coin('#1f9d8a','₮'),t:'<span class="bd n">TON</span>'},USDe:{p:.99,c:'+0,01 %',s:coin('#14181f;border:2px solid #cfd6e4','$'),t:'',open:1}};
-let HB=Object.assign({GRAM:.0164,USDT:0,USDe:0},ST.get('lk_hb',{})),CURS=['USD','EUR','RUB','UAH'],ci=ST.get('lk_cur',0);
+const TK={GRAM:{p:1.01,c:'+3,32 %',s:coin('linear-gradient(135deg,#55b0ff,#2f7df0)',dia),t:'<span class="bd">13,01 % APY</span>'},USDT:{n:'USD₮',p:.99,c:'+0,04 %',s:coin('#1f9d8a','₮'),t:'<span class="bd n">TON</span>'},USDe:{p:.99,c:'+0,01 %',s:coin('#14181f;border:2px solid #cfd6e4','$'),t:'',open:1},TON:{p:6.12,c:'+1,24 %',s:coin('#0b86e0','◇'),t:''}};
+let HB=Object.assign({GRAM:.0164,USDT:0,USDe:0,TON:0},ST.get('lk_hb',{})),CURS=['USD','EUR','RUB','UAH'],ci=ST.get('lk_cur',0);
 const nf=(v,d=4)=>v.toLocaleString('ru-RU',{maximumFractionDigits:d}),fm=v=>v.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});
 function render(){$('#toks').innerHTML=Object.keys(TK).map(k=>{const t=TK[k],a=HB[k];return `<div class="tok">${t.s}<div class="m"><b>${t.n||k}</b>${t.t}<div class="s">$${String(t.p).replace('.',',')} <span class="up">${t.c}</span></div></div><div class="r">${t.open&&!a?'<button class="btn" data-a="toast" data-v="Открыть USDe">Открыть</button>':`<b>${nf(a)}</b><div class="s">$${fm(a*t.p)}</div>`}</div></div>`}).join('');
  const tot=Object.keys(TK).reduce((s,k)=>s+HB[k]*TK[k].p,0),[i,f]=tot.toFixed(2).split('.');$('#bal').innerHTML='$ '+i+'<small>,'+f+'</small>';$('#av').textContent='Доступно: '+nf(HB.GRAM)+' GRAM';$('#cv').textContent=CURS[ci]}
@@ -200,7 +210,7 @@ $('#ap0').innerHTML=ap([['Tokenstore','#1b1b2a','≋'],['Ton VPN','#0f8ae0','▽
 $('#apps').innerHTML=[['DeFi',[['STON.fi','#2a64f3','S'],['Storm Trade','#17140a','⚡'],['swap.coffee','#222','◈'],['Upscale','#a02fe0','U']]],['Обменники',[['Mercuryo','#1b5e9e','M'],['SimpleSwap','#2563eb','S'],['LetsExchange','#16a34a','L'],['AvanChange','#2f3b52','A']]],['NFT',[['Getgems','#1c8cf0','G'],['Marketapp','#000','m'],['Split','#7fb8ff','/'],['Chunk','#000','C']]],['Утилиты',[['Ton VPN','#0f8ae0','▽'],['Tonviewer','#c8d6ff','◆'],['Outline VPN','#1b3a2f','◐'],['Play Wallet','#2a62f0','🎮']]],['Игры',[['EdChess','#2a2f38','♞'],['District Clash','#000','🐇'],['Cubes?','#4a2fc0','▣'],['Totemancer','#7a6a3a','🐱']]]].map(s=>`<div class="h">${s[0]}<a data-a="toast" data-v="${s[0]}">Смотреть все</a></div><div class="g4" style="padding:0">${ap(s[1])}</div>`).join('')+'<div style="height:60px"></div>';
 const f=(q,sel)=>$(q).oninput=e=>{const v=e.target.value.trim().toLowerCase();$$(sel).forEach(d=>d.style.display=!v||d.textContent.toLowerCase().includes(v)?'':'none')};f('#tq','#s-trade .g4>div');f('#bq','#s-browser .g4>div');
 const LOG=ST.get('lk_log',[]),U='UQDU...DZld',Z='UQAZ...T_26',B='UQBL...DOgi',C='EQBE...Z8aM';
-const G=[['11 ноября',[['up','Отправлено','UQD2...UJps','−1 GRAM','09:20','QlIqMytqcCFHKAE-NRNaKmg-Rxky-Xyr'],['up','Отправлено',Z,'−2,26 GRAM','09:10','-214934d7-ebc4-417f-a939-31d6db357ccd'],['up','Отправлено',Z,'−2,26 GRAM','09:08','-214934d7-ebc4-417f-a939-31d6db357ccd'],['gear','Вызов контракта',C,'−0,675 GRAM','08:10']]],['10 ноября',[['up','Отправлено',U,'−1 GRAM','21:23','8292959996_8939029313'],['up','Отправлено',B,'−2 GRAM','21:20','выплатаа']]],['4 ноября',[['up','Отправлено','UQA5...I8kC','−3 GRAM','21:04'],['gear','Вызов контракта',C,'−1,03 GRAM','21:03'],['down','Получено','UQAT...uuK8','+4,13 GRAM','21:02','e0ddcd15-52b3-490d-a222-541e968faf89']]],['3 ноября',[['up','Отправлено',U,'−1,12 GRAM','21:40','8292959996_8939029313'],['up','Отправлено',B,'−2 GRAM','21:08','любимцу'],['down','Получено','qkweiofficial.ton','+3,03 GRAM','12:05']]]];
+const G=[['11 ноября',[['up','Отправлено','UQD2...UJps','−1 GRAM','09:20','QlIqMytqcCFHKAE-NRNaKmg-Rxky-Xyr'],['up','Отправлено',Z,'−2,26 GRAM','09:10','-214934d7-ebc4-417f-a939-31d6db357ccd'],['up','Отправлено',Z,'−2,26 GRAM','09:08','-214934d7-ebc4-417f-a939-31d6db357ccd'],['gear','Вызов контракта',C,'−0,675 GRAM','08:10']]],['10 ноября',[['up','Отправлено',U,'−1 GRAM','21:23','8292959996_8939029313'],['up','Отправлено',B,'−2 GRAM','21:20','выплата']]],['4 ноября',[['up','Отправлено','UQA5...I8kC','−3 GRAM','21:04'],['gear','Вызов контракта',C,'−1,03 GRAM','21:03'],['down','Получено','UQAT...uuK8','+4,13 GRAM','21:02','e0ddcd15-52b3-490d-a222-541e968faf89']]],['3 ноября',[['up','Отправлено',U,'−1,12 GRAM','21:40','8292959996_8939029313'],['up','Отправлено',B,'−2 GRAM','21:08','любимцу'],['down','Получено','qkweiofficial.ton','+3,03 GRAM','12:05']]]];
 let hf=0;const F=['Все','Отправлено','Получено','Спам'];
 function hist(){$('#chips').innerHTML='<button class="ib" style="background:var(--cd);border-radius:50%;width:34px;height:34px;color:#fff;flex:none" data-a="pop">'+ic('back',18)+'</button>'+F.map((x,i)=>`<button class="${i==hf?'on':''}" data-a="hf" data-v="${i}">${x}</button>`).join('');
  const ok=x=>hf==0||(hf==1&&x[0]=='up')||(hf==2&&x[0]=='down'),all=(LOG.length?[['Сегодня',LOG]]:[]).concat(G);
@@ -226,14 +236,55 @@ const close=()=>{$$('.ov').forEach(o=>o.classList.remove('open'))};
 function setTab(t){$$('#s-wallet,#s-trade,#s-browser').forEach(s=>s.classList.toggle('on',s.id=='s-'+t));$$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v==t))}
 const done=(m)=>{render();ui();close();toast(m)};
 let lf=0;
+
+/* --- demo: spam money (double tap on Security) --- */
+const SPI=[['1 мин',1],['5 мин',5],['10 мин',10],['15 мин',15],['30 мин',30]];
+const SPC=[['1',1],['3',3],['5',5],['10',10],['∞',0]];
+const SPT=[['GRAM','GRAM'],['TON','TON'],['Случайно','random']];
+const SPA=[['100–1000','random'],['100',100],['500',500],['1000',1000]];
+let SP=Object.assign({int:5,cnt:10,tok:'random',amt:'random',on:0,left:10},ST.get('lk_spam',{}));
+let spTimer=null,spLeft=SP.left||SP.cnt||0,spLast=0;
+const spSave=()=>ST.set('lk_spam',SP);
+function spPaint(){
+  const draw=(id,arr,key)=>{const e=document.getElementById(id);if(e)e.innerHTML=arr.map(x=>`<button class="${SP[key]==x[1]?'on':''}" data-a="spSet" data-v="${key}|${x[1]}">${x[0]}</button>`).join('')};
+  draw('sp-int',SPI,'int');draw('sp-cnt',SPC,'cnt');draw('sp-tok',SPT,'tok');draw('sp-amt',SPA,'amt');
+  const st=document.getElementById('sp-status'),go=document.getElementById('sp-go');
+  if(st)st.textContent=SP.on?('Включено · осталось '+(SP.cnt?spLeft:'∞')):'Выключено';
+  if(go)go.textContent=SP.on?'Остановить':'Запустить';
+  const pe=document.getElementById('sp-perm');if(pe&&typeof Notification!=='undefined')pe.textContent=Notification.permission==='granted'?'Включены':'Выключены';
+}
+function spNotify(msg){
+  toast(msg);
+  try{if('serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
+}
+function spOnce(){
+  const tok=SP.tok==='random'?(Math.random()<.5?'GRAM':'TON'):SP.tok;
+  const amt=SP.amt==='random'?Math.floor(100+Math.random()*901):Number(SP.amt);
+  HB[tok]=+(HB[tok]+amt).toFixed(6);
+  const d=new Date(),tm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  LOG.unshift(['down','Получено','UQDv...gvwo','+'+nf(amt)+' '+tok,tm]);
+  ST.set('lk_hb',HB);ST.set('lk_log',LOG);render();hist();
+  spNotify('Получено '+nf(amt)+' '+tok);
+  if(SP.cnt){spLeft--;SP.left=spLeft;if(spLeft<=0)spStop()}
+  spPaint();
+}
+function spStop(){clearInterval(spTimer);spTimer=null;SP.on=0;SP.left=spLeft;spSave();spPaint()}
+function spStart(){spLeft=SP.cnt?SP.cnt:0;SP.left=spLeft;SP.on=1;spSave();spTimer=setInterval(spOnce,SP.int*60000);spPaint();spOnce()}
+spPaint();
+if(SP.on&&SP.cnt===0){spTimer=setInterval(spOnce,SP.int*60000);spPaint()}
+
 const ACT={tab:v=>setTab(v),sh:v=>$('#o-'+v).classList.add('open'),cs:close,mv:v=>mv(+v),hf:v=>{hf=+v;hist()},col:v=>{col=v;paint()},emo:v=>{emo=v;paint()},pl:v=>{pi=+v;plans()},
  push:v=>$('#s-'+v).classList.add('on'),pop:()=>$$('.push').forEach(s=>s.classList.remove('on')),qr:()=>$('#qr').classList.add('on'),cqr:()=>$('#qr').classList.remove('on'),
  key:(v,t)=>key(t.dataset.k,v),itk:v=>{isy=v;ui()},max:()=>{AM.stk=nf(HB.GRAM,4);ui()},
  cur:()=>{ci=(ci+1)%4;ST.set('lk_cur',ci);render();toast('Валюта: '+CURS[ci])},
- faq:()=>{const n=Date.now();if(n-lf<450){lf=0;$('#o-iss').classList.add('open')}else{lf=n;toast('Нажмите 2 раза на FAQ для выдачи')}},
+  faq:()=>{const n=Date.now();if(n-lf<450){lf=0;$('#o-iss').classList.add('open')}else{lf=n;toast('Нажмите 2 раза на FAQ для выдачи')}},
+  sec2:()=>{const n=Date.now();if(n-spLast<500){spLast=0;spPaint();$('#o-spam').classList.add('open')}else{spLast=n;toast('Нажмите 2 раза — спам деньгами')}},
+  spSet:v=>{const p=v.split('|');SP[p[0]]=/^\d+$/.test(p[1])?+p[1]:p[1];spSave();spPaint()},
+  spPerm:()=>{if(typeof Notification==='undefined')return toast('Уведомления недоступны');Notification.requestPermission().then(p=>{spPaint();toast(p==='granted'?'Уведомления включены':'Уведомления запрещены')})},
+  spamToggle:()=>{SP.on?spStop():spStart()},
  iss:()=>{const n=num(AM.iss);if(!n)return;HB[isy]=+(HB[isy]+n).toFixed(9);const d=new Date();LOG.unshift(['down','Получено','UQDv...gvwo','+'+nf(n)+' '+isy,String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')]);ST.set('lk_hb',HB);ST.set('lk_log',LOG);AM.iss='';hist();done('Выдано +'+nf(n)+' '+isy)},
- doSwap:()=>{const n=num(AM.swap);if(!n||n>HB.GRAM)return toast('Недостаточно GRAM');HB.GRAM=+(HB.GRAM-n).toFixed(6);HB.USDT=+(HB.USDT+n*1.01).toFixed(4);ST.set('lk_hb',HB);AM.swap='';done('Обменяно '+nf(n)+' GRAM')},
- doStk:()=>{const n=num(AM.stk);if(!n||n>HB.GRAM)return toast('Недостаточно GRAM');HB.GRAM=+(HB.GRAM-n).toFixed(6);ST.set('lk_hb',HB);AM.stk='';done('Застейкано '+nf(n)+' GRAM')},
+ doSwap:()=>{const n=num(AM.swap);if(!n||n>HB.GRAM)return toast('Недостаточно GRAM');HB.GRAM=+(HB.GRAM-n).toFixed(6);HB.USDT=+(HB.USDT+n*1.01).toFixed(4);ST.set('lk_hb',HB);AM.swap='';done('Обмен выполнен: '+nf(n)+' GRAM')},
+ doStk:()=>{const n=num(AM.stk);if(!n||n>HB.GRAM)return toast('Недостаточно GRAM');HB.GRAM=+(HB.GRAM-n).toFixed(6);ST.set('lk_hb',HB);AM.stk='';done('Стейкинг запущен: '+nf(n)+' GRAM')},
  buy:()=>{close();toast('Батарейка пополнена: '+PL[pi][1])},toast:v=>toast(v)};
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;if(t.classList.contains('ov')&&e.target!==t)return;ACT[t.dataset.a](t.dataset.v,t);if(t.dataset.a=='cs'&&document.activeElement)document.activeElement.blur()});
 /* no zoom */
