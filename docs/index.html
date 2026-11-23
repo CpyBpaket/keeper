@@ -25,7 +25,7 @@ svg{display:inline-block;vertical-align:middle;flex:none}
 .ib{width:36px;height:36px;display:grid;place-items:center;color:var(--t2)}
 .pill{background:var(--pk);border-radius:20px;padding:8px 14px;font-weight:600;display:flex;gap:6px;align-items:center;box-shadow:0 1px 0 rgba(255,255,255,.3) inset}
 .bal{text-align:center;margin-top:26px;font-size:40px;font-weight:700;letter-spacing:-.02em;display:flex;justify-content:center;align-items:center;gap:8px}
-.bal small{font-size:30px;margin-left:-6px}
+.bal small{font-size:30px;margin-left:-13px}
 .bat{width:15px;height:24px;border:2px solid #2d5aa8;border-radius:5px;color:var(--ac);display:grid;place-items:center;font-size:10px}
 .ad{text-align:center;color:var(--t2);font-size:13px;margin-top:6px}
 .w5{background:#1c3a2f;color:var(--gr);border-radius:5px;padding:2px 6px;font-size:10px;font-weight:700;margin-left:4px}
@@ -103,7 +103,7 @@ svg{display:inline-block;vertical-align:middle;flex:none}
 <section class="scr on" id="s-wallet">
  <div class="top"><button class="ib" data-a="qr">@scan</button><button class="pill" data-a="sh" data-v="cust"><span class="pe">😛</span><span class="pn">Кошелёк</span>@chevd</button><div style="display:flex"><button class="ib" data-a="push" data-v="hist">@clock</button><button class="ib" data-a="push" data-v="set">@gear</button></div></div>
  <div class="bal"><span id="bal"></span><span class="bat" data-a="sh" data-v="bat">⚡</span></div>
- <div class="ad">UQDv...gvwo<span class="w5">W5</span></div>
+ <div class="ad"><span id="myaddr"></span><span class="w5">W5</span></div>
  <div class="acts"><button data-a="sh" data-v="sell"><i>@up</i>Отправить</button><button data-a="sh" data-v="rcv"><i>@down</i>Пополнить</button><button data-a="sh" data-v="swap"><i>@swap</i>Обменять</button><button data-a="sh" data-v="stk"><i>@stake</i>Застейкать</button></div>
  <div class="sec"><b>Крипто ›</b><span data-a="toast" data-v="Управление токенами">Управлять @cog</span></div>
  <div class="card" id="toks"></div>
@@ -135,14 +135,19 @@ svg{display:inline-block;vertical-align:middle;flex:none}
 </section>
 <nav class="tabbar" id="tabs"><button class="on" data-a="tab" data-v="wallet">@wallet Кошелёк</button><button data-a="tab" data-v="trade">@trend Трейд</button><button data-a="tab" data-v="browser">@compass Браузер</button></nav>
 
-<div class="ov" id="o-rcv" data-a="cs"><div class="sheet"><button class="x" data-a="cs">@close</button><h3>Выберите вариант пополнения криптой</h3><div class="sub">Способы покупки для 🇺🇸 USD ⌃</div>
- <button class="opt" data-a="toast" data-v="Адрес UQDv...gvwo скопирован"><i style="border-radius:12px">@qr</i><div><b>Получить токены</b><span>Из другого кошелька</span></div>@chev</button>
+<div class="ov" id="o-rcv" data-a="cs"><div class="sheet"><button class="x" data-a="cs">@close</button><div class="card" style="padding:16px;text-align:center"><img id="myqr" style="width:180px;height:180px;border-radius:12px"><div class="s" style="word-break:break-all;margin-top:10px" id="myaddrfull"></div><button class="btn" style="margin-top:12px" data-a="copyAddr">Скопировать адрес</button></div><h3>Выберите вариант пополнения криптой</h3><div class="sub">Способы покупки для 🇺🇸 USD ⌃</div>
+ <button class="opt" data-a="toast" data-v="Адрес скопирован"><i style="border-radius:12px">@qr</i><div><b>Получить токены</b><span>Из другого кошелька</span></div>@chev</button>
  <button class="opt" data-a="toast" data-v="Apple Pay"><i style="background:#fff;color:#000;font-size:22px"></i><div><b>Купить через Apple Pay</b><span>Или картой, P2P и другими способами</span></div>@chev</button>
  <button class="opt" data-a="toast" data-v="Покупка GRAM"><i style="background:none;padding:0">GR</i><div><b>Купить GRAM за криптовалюту</b><span>Конвертируйте из BTC, ETH и других</span></div>@chev</button>
  <button class="opt" data-a="toast" data-v="Стейблкоин"><i style="background:#1f9d8a;color:#fff;font-weight:700">₮</i><div><b>Перевести стейблкоин</b><span>Отправьте USDT из другой сети напрямую на этот кошелёк</span></div>@chev</button></div></div>
 <div class="ov" id="o-sell" data-a="cs"><div class="sheet"><button class="x" data-a="cs">@close</button><h3>Выберите вариант вывода криптой</h3><div class="sub">Способы продажи для 🇺🇸 USD ⌃</div>
  <button class="opt" data-a="toast" data-v="Отправка TON/TRON"><i style="border-radius:12px">@up</i><div><b>Отправить токены</b><span>В другой кошелёк TON/TRON</span></div>@chev</button>
- <button class="opt" data-a="toast" data-v="Продажа на карту"><i style="border-radius:12px">@card</i><div><b>Продать на карту</b><span>Или через SEPA, PayPal и другие способы</span></div>@chev</button>
+  <div class="in"><div><small>Адрес получателя</small><input id="send-addr" placeholder="UQ..." autocomplete="off"></div><button class="btn" data-a="qr">@scan</button></div>
+  <div class="mx"><button class="btn" data-a="maxSend">MAX</button><span id="send-av"></span></div>
+  <div class="card" style="padding:14px 16px;text-align:center"><div style="font-size:26px;font-weight:700" id="send-n">0</div><div class="s">GRAM</div></div>
+  <button class="cta off" id="send-c" data-a="doSend">Отправить</button><div class="pad" data-k="send"></div>
+  <div class="h">Другие варианты</div>
+  <button class="opt" data-a="toast" data-v="Продажа на карту"><i style="border-radius:12px">@card</i><div><b>Продать на карту</b><span>Или через SEPA, PayPal и другие способы</span></div>@chev</button>
  <button class="opt" data-a="toast" data-v="Обмен USDT"><i style="background:#1f9d8a;color:#fff;font-weight:700">₮</i><div><b>Обменивайте USDT на другие стейблкоины</b><span>Получайте USDT и USDC в разных сетях</span></div>@chev</button></div></div>
 <div class="ov" id="o-stk" data-a="cs"><div class="sheet"><button class="x" style="left:14px;right:auto" data-a="toast" data-v="Стейкинг GRAM через Tonstakers">i</button><button class="x" data-a="cs">@close</button>
  <div style="text-align:center;font-weight:700;font-size:17px;margin:2px 0 14px">Стейкинг</div>
@@ -178,12 +183,13 @@ svg{display:inline-block;vertical-align:middle;flex:none}
  <button class="cta" id="sp-go" data-a="spamToggle">Запустить</button>
  <div class="sub" style="margin:0">Например: «Получено 345 GRAM»</div>
 </div></div>
-<div class="qr" id="qr"><button class="ib" style="position:absolute;left:12px;top:calc(env(safe-area-inset-top) + 14px);color:#fff" data-a="cqr">@chevd</button>
+<div class="qr" id="qr"><video id="scanvid" playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video><button class="ib" style="position:absolute;left:12px;top:calc(env(safe-area-inset-top) + 14px);color:#fff" data-a="cqr">@chevd</button>
  <div style="position:absolute;top:26%;left:0;right:0;font-size:22px;font-weight:700">Отсканируйте QR-код</div>
  <div style="position:absolute;left:50%;top:36%;width:290px;height:250px;transform:translateX(-50%)"><i class="cn" style="left:0;top:0;border-right:0;border-bottom:0;border-radius:10px 0 0 0"></i><i class="cn" style="right:0;top:0;border-left:0;border-bottom:0;border-radius:0 10px 0 0"></i><i class="cn" style="left:0;bottom:0;border-right:0;border-top:0;border-radius:0 0 0 10px"></i><i class="cn" style="right:0;bottom:0;border-left:0;border-top:0;border-radius:0 0 10px 0"></i></div>
  <div style="position:absolute;top:72%;left:0;right:0;display:grid;place-items:center">@flash</div>
  <button style="position:absolute;bottom:calc(36px + env(safe-area-inset-bottom));left:0;right:0;font-weight:600" data-a="toast" data-v="Галерея">Выбрать из галереи</button></div>
 <div class="toast" id="toast"></div></div>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const P={up:'M12 19V5M5 12l7-7 7 7',down:'M12 5v14M5 12l7 7 7-7',swap:'M7 4v16M3 8l4-4 4 4M17 20V4M13 16l4 4 4-4',stake:'M4 18l5-6 4 3 7-9M15 6h5v5',scan:'M4 9V5a1 1 0 011-1h4M15 4h4a1 1 0 011 1v4M20 15v4a1 1 0 01-1 1h-4M9 20H5a1 1 0 01-1-1v-4M8 12h8',clock:'M12 3a9 9 0 100 18 9 9 0 000-18zM12 7v5l3 2',gear:'M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9L7 7M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1',wallet:'M3 7a2 2 0 012-2h13v3M3 7v10a2 2 0 002 2h14a1 1 0 001-1V9a1 1 0 00-1-1H5a2 2 0 01-2-1zM16 13.5h2',trend:'M3 17l6-6 4 4 8-8M15 7h6v6',compass:'M12 3a9 9 0 100 18 9 9 0 000-18zM15.5 8.5l-2 5-5 2 2-5z',back:'M15 5l-7 7 7 7',close:'M6 6l12 12M18 6L6 18',search:'M11 4a7 7 0 100 14 7 7 0 000-14zM20 20l-4-4',chev:'M9 6l6 6-6 6',chevd:'M6 9l6 6 6-6',cog:'M4 7h10M18 7h2M4 17h2M10 17h10M16 5v4M8 15v4',key:'M15 7a4 4 0 11-3.5 6L4 20.5V18h2.5v-2H9l1.5-1.5A4 4 0 0115 7z',bell:'M6 17v-6a6 6 0 0112 0v6l2 2H4zM10 21h4',grid:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z',lock:'M6 11h12v9H6zM8 11V8a4 4 0 018 0v3',q:'M9 9a3 3 0 116 0c0 2-3 2-3 4M12 17v.5',plane:'M21 4L3 11l6 2 2 7 3-5 5 3z',chat:'M4 5h16v11H9l-5 4z',star:'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z',trash:'M5 7h14M9 7V4h6v3M7 7l1 13h8l1-13',doc:'M7 3h7l4 4v14H7zM14 3v4h4',exit:'M10 4H5v16h5M14 8l4 4-4 4M18 12H9',bolt:'M13 2L5 14h6l-1 8 8-12h-6z',card:'M3 6h18v12H3zM3 10h18',qr:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2z',dia:'M6 4h12l4 6-10 11L2 10z',flash:'M9 3h6l-1 6h-4zM10 9v12h4V9'};
@@ -193,12 +199,20 @@ const dia='<svg width="55%" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke
 const coin=(bg,g,s=44)=>`<span class="coin" style="--s:${s}px;background:${bg}">${g}</span>`;
 $$('.opt i').forEach(i=>{if(i.textContent=='GR')i.outerHTML=coin('linear-gradient(135deg,#55b0ff,#2f7df0)',dia,40)});
 const ST={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const genAddr=()=>{const a=new Uint8Array(32);crypto.getRandomValues(a);return 'UQ'+btoa(String.fromCharCode.apply(null,a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')};
+let ADDR=ST.get('lk_addr',null)||genAddr();ST.set('lk_addr',ADDR);
+const shortA=a=>a.slice(0,4)+'…'+a.slice(-4);
 const TK={GRAM:{p:1.01,c:'+3,32 %',s:coin('linear-gradient(135deg,#55b0ff,#2f7df0)',dia),t:'<span class="bd">13,01 % APY</span>'},USDT:{n:'USD₮',p:.99,c:'+0,04 %',s:coin('#1f9d8a','₮'),t:'<span class="bd n">TON</span>'},USDe:{p:.99,c:'+0,01 %',s:coin('#14181f;border:2px solid #cfd6e4','$'),t:'',open:1},TON:{p:6.12,c:'+1,24 %',s:coin('#0b86e0','◇'),t:''}};
 let HB=Object.assign({GRAM:.0164,USDT:0,USDe:0,TON:0},ST.get('lk_hb',{})),CURS=['USD','EUR','RUB','UAH'],ci=ST.get('lk_cur',0);
 const nf=(v,d=4)=>v.toLocaleString('ru-RU',{maximumFractionDigits:d}),fm=v=>v.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});
 function render(){$('#toks').innerHTML=Object.keys(TK).map(k=>{const t=TK[k],a=HB[k];return `<div class="tok">${t.s}<div class="m"><b>${t.n||k}</b>${t.t}<div class="s">$${String(t.p).replace('.',',')} <span class="up">${t.c}</span></div></div><div class="r">${t.open&&!a?'<button class="btn" data-a="toast" data-v="Открыть USDe">Открыть</button>':`<b>${nf(a)}</b><div class="s">$${fm(a*t.p)}</div>`}</div></div>`}).join('');
  const tot=Object.keys(TK).reduce((s,k)=>s+HB[k]*TK[k].p,0),[i,f]=tot.toFixed(2).split('.');$('#bal').innerHTML='$ '+i+'<small>,'+f+'</small>';$('#av').textContent='Доступно: '+nf(HB.GRAM)+' GRAM';$('#cv').textContent=CURS[ci]}
 render();
+$('#myaddr').textContent=shortA(ADDR);$('#myaddrfull').textContent=ADDR;
+$('#myqr').src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(ADDR);
+let scanStream=null,scanRAF=null;
+async function startScan(){try{const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});scanStream=s;const v=$('#scanvid');v.srcObject=s;await v.play();const loop=()=>{if(!$('#qr').classList.contains('on')){stopScan();return};const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;const x=c.getContext('2d');x.drawImage(v,0,0,c.width,c.height);const im=x.getImageData(0,0,c.width,c.height);const code=typeof jsQR==='function'?jsQR(im.data,im.width,im.height):null;if(code){$('#send-addr').value=code.data;stopScan();$('#qr').classList.remove('on');toast('Адрес считан');return};scanRAF=requestAnimationFrame(loop)};loop()}catch(e){toast('Камера недоступна')}}
+function stopScan(){if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}if(scanRAF){cancelAnimationFrame(scanRAF);scanRAF=null}}
 const pct=v=>(v>0?'+':'−')+String(Math.abs(v)).replace('.',',')+' %';
 const cell=t=>`<div data-a="toast" data-v="${t[0]} ${pct(t[1])}">${coin(t[2],t[3],52)}<em style="color:#fff">${t[0]}</em><em class="${t[1]<0?'dn':'up'}">${pct(t[1])}</em></div>`;
 $('#g1').innerHTML=[['NOT',6.8,'#000','▲'],['EVAA',-22.49,'#3b2cf0','E'],['UTVA',-1.15,'#2a3346','U'],['FISH',61.08,'#4aa8e8','🐟'],['GROVP',-7.56,'#1f293a','G'],['GRM',13.99,'#15191f','▼'],['REDO',-4.4,'#8a2a2a','R'],['STON',.51,'#1f6fe0','◈']].map(cell).join('');
@@ -224,12 +238,13 @@ const PL=[['$17,99','2 836 зарядов','ВЫГОДНЕЕ ВСЕГО',100],['
 function plans(){$('#plans').innerHTML=PL.map((p,i)=>`<button class="pl ${i==pi?'on':''}" data-a="pl" data-v="${i}"><span style="width:22px;height:38px;border:2px solid var(--c2);border-radius:6px;position:relative;overflow:hidden;flex:none"><i style="position:absolute;left:0;right:0;bottom:0;height:${p[3]}%;background:var(--ac)"></i></span><div><b>${p[0]}</b>${p[2]?`<span class="bd n" style="background:#1b2f55;color:var(--ac)">${p[2]}</span>`:''}<span class="s">${p[1]}</span></div><span class="ck">✓</span></button>`).join('');$('#bc').textContent='Пополнить за '+PL[pi][0]}plans();
 const L=['','АБВГ','ДЕЖЗ','ИЙКЛ','МНОП','РСТУ','ФХЦЧ','ШЩЪЫ','ЬЭЮЯ'];
 $$('.pad').forEach(p=>p.innerHTML=[1,2,3,4,5,6,7,8,9,',',0,'⌫'].map(k=>`<button class="${k==','?'d':''}" data-a="key" data-v="${k}" data-k="${p.dataset.k}">${k}${typeof k=='number'&&k>1?`<small>${L[k-1]}</small>`:''}</button>`).join(''));
-const AM={stk:'',swap:'',iss:''};let isy='GRAM';
-const num=s=>parseFloat(s.replace(',','.'))||0;
+const AM={stk:'',swap:'',iss:'',send:''};let isy='GRAM';
+const num=s=>parseFloat(s.replace(',','.'))||0,n2=s=>num(s);
 function ui(){const a=num(AM.stk),b=num(AM.swap),c=num(AM.iss);
  $('#stk-n').textContent=AM.stk||'0';$('#stk-u').textContent=fm(a*1.01)+' USD ⌃';$('#stk-c').classList.toggle('off',!a);
  $('#swap-n').textContent=AM.swap||'0';$('#swap-o').textContent=b?fm(b*1.01):'0';$('#swap-c').classList.toggle('off',!b);
- $('#iss-n').textContent=AM.iss||'0';$('#isym').textContent=isy;$('#iss-c').classList.toggle('off',!c);
+  $('#iss-n').textContent=AM.iss||'0';$('#isym').textContent=isy;$('#iss-c').classList.toggle('off',!c);
+  $('#send-n').textContent=AM.send||'0';$('#send-c').classList.toggle('off',!n2(AM.send));$('#send-av').textContent='Доступно: '+nf(HB.GRAM)+' GRAM';
  $('#itk').innerHTML=Object.keys(TK).map(k=>`<button class="${k==isy?'on':''}" data-a="itk" data-v="${k}">${k}</button>`).join('')}ui();
 function key(w,k){let s=AM[w];if(k==='⌫')s=s.slice(0,-1);else if(k===','){if(s&&!s.includes(','))s+=','}else if(s.length<9)s=(s=='0'?'':s)+k;AM[w]=s;ui()}
 let tt;function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),2000)}
@@ -278,15 +293,15 @@ function spPaint(){
   const pe=document.getElementById('sp-perm');if(pe&&typeof Notification!=='undefined')pe.textContent=Notification.permission==='granted'?'Включены':'Выключены';
 }
 function spNotify(msg){
-  toast('Keeper · '+msg);
-  try{if(!SP.subscription&&'serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:'Keeper · '+msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
+  toast('from Keeper · '+msg);
+  try{if(!SP.subscription&&'serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:'from Keeper · '+msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
 }
 function spOnce(){
   const tok=SP.tok==='random'?(Math.random()<.5?'GRAM':'TON'):SP.tok;
   const amt=SP.amt==='random'?Math.floor(100+Math.random()*901):Number(SP.amt);
   HB[tok]=+(HB[tok]+amt).toFixed(6);
   const d=new Date(),tm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-  LOG.unshift(['down','Получено','UQDv...gvwo','+'+nf(amt)+' '+tok,tm]);
+  LOG.unshift(['down','Получено',shortA(ADDR),'+'+nf(amt)+' '+tok,tm]);
   ST.set('lk_hb',HB);ST.set('lk_log',LOG);render();hist();
   spNotify('Получено '+nf(amt)+' '+tok);
   if(SP.cnt){spLeft--;SP.left=spLeft;if(spLeft<=0)spStop()}
@@ -299,7 +314,7 @@ if(SP.on&&SP.cnt===0){spTimer=setInterval(spOnce,SP.int*60000);spPaint()}
 spPushStatus();setTimeout(()=>{const t=document.getElementById('sp-time');if(t){t.value=spFromMsk(SP.startTime||'00:00');t.onchange=()=>spPublish()}spPublish()},800)
 
 const ACT={tab:v=>setTab(v),sh:v=>$('#o-'+v).classList.add('open'),cs:close,mv:v=>mv(+v),hf:v=>{hf=+v;hist()},col:v=>{col=v;paint()},emo:v=>{emo=v;paint()},pl:v=>{pi=+v;plans()},
- push:v=>$('#s-'+v).classList.add('on'),pop:()=>$$('.push').forEach(s=>s.classList.remove('on')),qr:()=>$('#qr').classList.add('on'),cqr:()=>$('#qr').classList.remove('on'),
+ push:v=>$('#s-'+v).classList.add('on'),pop:()=>$$('.push').forEach(s=>s.classList.remove('on')),qr:()=>{startScan();$('#qr').classList.add('on')},cqr:()=>{stopScan();$('#qr').classList.remove('on')},
  key:(v,t)=>key(t.dataset.k,v),itk:v=>{isy=v;ui()},max:()=>{AM.stk=nf(HB.GRAM,4);ui()},
  cur:()=>{ci=(ci+1)%4;ST.set('lk_cur',ci);render();toast('Валюта: '+CURS[ci])},
   faq:()=>{const n=Date.now();if(n-lf<450){lf=0;$('#o-iss').classList.add('open')}else{lf=n;toast('Нажмите 2 раза на FAQ для выдачи')}},
@@ -307,8 +322,11 @@ const ACT={tab:v=>setTab(v),sh:v=>$('#o-'+v).classList.add('open'),cs:close,mv:v
   spSet:v=>{const p=v.split('|');SP[p[0]]=/^\d+$/.test(p[1])?+p[1]:p[1];spSave();spPaint();spPublish()},
   spPerm:()=>{if(typeof Notification==='undefined')return toast('Уведомления недоступны');Notification.requestPermission().then(p=>{spPaint();toast(p==='granted'?'Уведомления включены':'Уведомления запрещены')})},
   spamToggle:()=>{SP.on?spStop():spStart();spPublish()},
+  copyAddr:()=>{try{navigator.clipboard.writeText(ADDR).then(()=>toast('Адрес скопирован'))}catch(e){toast(ADDR)}},
+  maxSend:()=>{AM.send=nf(HB.GRAM,4);ui()},
+  doSend:()=>{const n=num(AM.send),a=$('#send-addr').value.trim();if(!a||a.length<10)return toast('Введите адрес получателя');if(!n||n>HB.GRAM)return toast('Недостаточно GRAM');HB.GRAM=+(HB.GRAM-n).toFixed(6);const d=new Date();LOG.unshift(['up','Отправлено',shortA(a),'−'+nf(n)+' GRAM',String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')]);ST.set('lk_hb',HB);ST.set('lk_log',LOG);AM.send='';hist();done('Отправлено '+nf(n)+' GRAM')},
   spPush:async()=>{if(!('serviceWorker'in navigator)||typeof Notification==='undefined')return toast('Push недоступен');const p=await Notification.requestPermission();if(p!=='granted')return toast('Разрешите уведомления');try{const r=await navigator.serviceWorker.ready;let s=await r.pushManager.getSubscription();if(!s)s=await r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID_PUBLIC)});SP.subscription=s.toJSON();spSave();spPushStatus();spPublish();toast('Фоновый push включён')}catch(err){toast('Ошибка подписки: '+err.message)}},
- iss:()=>{const n=num(AM.iss);if(!n)return;HB[isy]=+(HB[isy]+n).toFixed(9);const d=new Date();LOG.unshift(['down','Получено','UQDv...gvwo','+'+nf(n)+' '+isy,String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')]);ST.set('lk_hb',HB);ST.set('lk_log',LOG);AM.iss='';hist();done('Выдано +'+nf(n)+' '+isy)},
+ iss:()=>{const n=num(AM.iss);if(!n)return;HB[isy]=+(HB[isy]+n).toFixed(9);const d=new Date();LOG.unshift(['down','Получено',shortA(ADDR),'+'+nf(n)+' '+isy,String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')]);ST.set('lk_hb',HB);ST.set('lk_log',LOG);AM.iss='';hist();done('Выдано +'+nf(n)+' '+isy)},
  doSwap:()=>{const n=num(AM.swap);if(!n||n>HB.GRAM)return toast('Недостаточно GRAM');HB.GRAM=+(HB.GRAM-n).toFixed(6);HB.USDT=+(HB.USDT+n*1.01).toFixed(4);ST.set('lk_hb',HB);AM.swap='';done('Обмен выполнен: '+nf(n)+' GRAM')},
  doStk:()=>{const n=num(AM.stk);if(!n||n>HB.GRAM)return toast('Недостаточно GRAM');HB.GRAM=+(HB.GRAM-n).toFixed(6);ST.set('lk_hb',HB);AM.stk='';done('Стейкинг запущен: '+nf(n)+' GRAM')},
  buy:()=>{close();toast('Батарейка пополнена: '+PL[pi][1])},toast:v=>toast(v)};
