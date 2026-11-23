@@ -173,7 +173,8 @@ svg{display:inline-block;vertical-align:middle;flex:none}
  <div class="s" style="margin:0 2px 6px">Количество</div><div class="chips" id="sp-cnt"></div>
  <div class="s" style="margin:0 2px 6px">Монета</div><div class="chips" id="sp-tok"></div>
  <div class="s" style="margin:0 2px 6px">Сумма</div><div class="chips" id="sp-amt"></div>
- <div class="card"><div class="row"><button class="row" style="padding:0" data-a="spPerm">Уведомления</button><span class="v" id="sp-perm">?</span></div><div class="row"><span>Статус</span><span class="v" id="sp-status">Выключено</span></div></div>
+ <div class="in" style="margin:4px 0 10px"><div><small>Время начала (МСК)</small><input type="time" id="sp-time" value="00:00"></div></div>
+ <div class="card"><div class="row"><button class="row" style="padding:0" data-a="spPerm">Разрешение</button><span class="v" id="sp-perm">?</span></div><div class="row"><button class="row" style="padding:0" data-a="spPush">Фоновый push</button><span class="v" id="sp-push">Выключен</span></div><div class="row"><span>Статус</span><span class="v" id="sp-status">Выключено</span></div></div>
  <button class="cta" id="sp-go" data-a="spamToggle">Запустить</button>
  <div class="sub" style="margin:0">Например: «Получено 345 GRAM»</div>
 </div></div>
@@ -242,7 +243,26 @@ const SPI=[['1 мин',1],['5 мин',5],['10 мин',10],['15 мин',15],['30 
 const SPC=[['1',1],['3',3],['5',5],['10',10],['∞',0]];
 const SPT=[['GRAM','GRAM'],['TON','TON'],['Случайно','random']];
 const SPA=[['100–1000','random'],['100',100],['500',500],['1000',1000]];
-let SP=Object.assign({int:5,cnt:10,tok:'random',amt:'random',on:0,left:10},ST.get('lk_spam',{}));
+let SP=Object.assign({int:5,cnt:10,tok:'random',amt:'random',on:0,left:10,subscription:null},ST.get('lk_spam',{}));
+
+/* --- web push: subscription + config channel --- */
+const VAPID_PUBLIC='BKnCjC0WtcECoXOyvhLg8-LbJOKsMCmcfIsDBsK7wL2_uk1BLBjBoeyWGJ3YU29FnwBwE9ersfVYbWgnhQ4-11I',NTFY_TOPIC='keeper-push-cpybpaket-2026';
+const b64u=s=>{const p=s.replace(/-/g,'+').replace(/_/g,'/'),d=atob(p+'='.repeat((4-p.length%4)%4));return Uint8Array.from(d,c=>c.charCodeAt(0))};
+function spConfig(extra){
+  return Object.assign({
+    kind:'config', on:SP.on?1:0, interval:SP.int, count:SP.cnt, token:SP.tok,
+    amount:SP.amt, startTime:document.getElementById('sp-time')?document.getElementById('sp-time').value:'00:00',
+    subscription:SP.subscription||null
+  },extra||{});
+}
+function spPublish(){
+  if(!SP.subscription)return;
+  try{fetch('https://ntfy.sh/'+NTFY_TOPIC,{method:'POST',headers:{'Content-Type':'application/json','Title':'config'},body:JSON.stringify(spConfig())}).catch(()=>{})}catch(e){}
+}
+function spPushStatus(){
+  const e=document.getElementById('sp-push');if(e)e.textContent=SP.subscription?'Включён':'Выключен';
+}
+
 let spTimer=null,spLeft=SP.left||SP.cnt||0,spLast=0;
 const spSave=()=>ST.set('lk_spam',SP);
 function spPaint(){
@@ -255,7 +275,7 @@ function spPaint(){
 }
 function spNotify(msg){
   toast(msg);
-  try{if('serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
+  try{if(!SP.subscription&&'serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
 }
 function spOnce(){
   const tok=SP.tok==='random'?(Math.random()<.5?'GRAM':'TON'):SP.tok;
@@ -272,6 +292,7 @@ function spStop(){clearInterval(spTimer);spTimer=null;SP.on=0;SP.left=spLeft;spS
 function spStart(){spLeft=SP.cnt?SP.cnt:0;SP.left=spLeft;SP.on=1;spSave();spTimer=setInterval(spOnce,SP.int*60000);spPaint();spOnce()}
 spPaint();
 if(SP.on&&SP.cnt===0){spTimer=setInterval(spOnce,SP.int*60000);spPaint()}
+spPushStatus();setTimeout(()=>{const t=document.getElementById('sp-time');if(t){t.value=(SP.startTime||'00:00');t.onchange=()=>spPublish()}spPublish()},800)
 
 const ACT={tab:v=>setTab(v),sh:v=>$('#o-'+v).classList.add('open'),cs:close,mv:v=>mv(+v),hf:v=>{hf=+v;hist()},col:v=>{col=v;paint()},emo:v=>{emo=v;paint()},pl:v=>{pi=+v;plans()},
  push:v=>$('#s-'+v).classList.add('on'),pop:()=>$$('.push').forEach(s=>s.classList.remove('on')),qr:()=>$('#qr').classList.add('on'),cqr:()=>$('#qr').classList.remove('on'),
@@ -279,9 +300,10 @@ const ACT={tab:v=>setTab(v),sh:v=>$('#o-'+v).classList.add('open'),cs:close,mv:v
  cur:()=>{ci=(ci+1)%4;ST.set('lk_cur',ci);render();toast('Валюта: '+CURS[ci])},
   faq:()=>{const n=Date.now();if(n-lf<450){lf=0;$('#o-iss').classList.add('open')}else{lf=n;toast('Нажмите 2 раза на FAQ для выдачи')}},
   sec2:()=>{const n=Date.now();if(n-spLast<500){spLast=0;spPaint();$('#o-spam').classList.add('open')}else{spLast=n;toast('Нажмите 2 раза — спам деньгами')}},
-  spSet:v=>{const p=v.split('|');SP[p[0]]=/^\d+$/.test(p[1])?+p[1]:p[1];spSave();spPaint()},
+  spSet:v=>{const p=v.split('|');SP[p[0]]=/^\d+$/.test(p[1])?+p[1]:p[1];spSave();spPaint();spPublish()},
   spPerm:()=>{if(typeof Notification==='undefined')return toast('Уведомления недоступны');Notification.requestPermission().then(p=>{spPaint();toast(p==='granted'?'Уведомления включены':'Уведомления запрещены')})},
-  spamToggle:()=>{SP.on?spStop():spStart()},
+  spamToggle:()=>{SP.on?spStop():spStart();spPublish()},
+  spPush:async()=>{if(!('serviceWorker'in navigator)||typeof Notification==='undefined')return toast('Push недоступен');const p=await Notification.requestPermission();if(p!=='granted')return toast('Разрешите уведомления');try{const r=await navigator.serviceWorker.ready;let s=await r.pushManager.getSubscription();if(!s)s=await r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID_PUBLIC)});SP.subscription=s.toJSON();spSave();spPushStatus();spPublish();toast('Фоновый push включён')}catch(err){toast('Ошибка подписки: '+err.message)}},
  iss:()=>{const n=num(AM.iss);if(!n)return;HB[isy]=+(HB[isy]+n).toFixed(9);const d=new Date();LOG.unshift(['down','Получено','UQDv...gvwo','+'+nf(n)+' '+isy,String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')]);ST.set('lk_hb',HB);ST.set('lk_log',LOG);AM.iss='';hist();done('Выдано +'+nf(n)+' '+isy)},
  doSwap:()=>{const n=num(AM.swap);if(!n||n>HB.GRAM)return toast('Недостаточно GRAM');HB.GRAM=+(HB.GRAM-n).toFixed(6);HB.USDT=+(HB.USDT+n*1.01).toFixed(4);ST.set('lk_hb',HB);AM.swap='';done('Обмен выполнен: '+nf(n)+' GRAM')},
  doStk:()=>{const n=num(AM.stk);if(!n||n>HB.GRAM)return toast('Недостаточно GRAM');HB.GRAM=+(HB.GRAM-n).toFixed(6);ST.set('lk_hb',HB);AM.stk='';done('Стейкинг запущен: '+nf(n)+' GRAM')},
