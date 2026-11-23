@@ -180,7 +180,8 @@ svg{display:inline-block;vertical-align:middle;flex:none}
  <div class="s" style="margin:0 2px 6px">Монета</div><div class="chips" id="sp-tok"></div>
  <div class="s" style="margin:0 2px 6px">Сумма</div><div class="chips" id="sp-amt"></div>
  <div class="in" style="margin:4px 0 10px"><div><small>Время начала ( ваше время )</small><input type="time" id="sp-time" value="00:00"></div></div>
- <div class="card"><div class="row"><button class="row" style="padding:0" data-a="spPerm">Разрешение</button><span class="v" id="sp-perm">?</span></div><div class="row"><button class="row" style="padding:0" data-a="spPush">Фоновый push</button><span class="v" id="sp-push">Выключен</span></div><div class="row"><span>Статус</span><span class="v" id="sp-status">Выключено</span></div></div>
+ <div class="card"><div class="row"><button class="row" style="padding:0" data-a="spPerm">Разрешение</button><span class="v" id="sp-perm">?</span></div><div class="row"><button class="row" style="padding:0" data-a="spPush">Фоновый push</button><span class="v" id="sp-push">Выключен</span></div>
+<div class="row"><button class="row" style="padding:0" data-a="spRePush">Перепроверить push</button><span class="v">↻</span></div><div class="row"><span>Статус</span><span class="v" id="sp-status">Выключено</span></div></div>
  <button class="cta" id="sp-go" data-a="spamToggle">Запустить</button>
  <div class="sub" style="margin:0">Например: «Получено 345 GRAM»</div>
 </div></div>
@@ -329,7 +330,7 @@ function spPaint(){
 }
 function spNotify(msg){
   toast('from Keeper · '+msg);
-  try{if(!SP.subscription&&'serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:'from Keeper · '+msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
+  try{if('serviceWorker'in navigator&&Notification.permission==='granted')navigator.serviceWorker.ready.then(r=>r.showNotification('Keeper',{body:'from Keeper · '+msg,icon:'icons/icon-192.png',badge:'icons/icon-64.png'}))}catch(e){}
 }
 function spOnce(){
   const tok=SP.tok==='random'?(Math.random()<.5?'GRAM':'TON'):SP.tok;
@@ -362,6 +363,7 @@ const ACT={tab:v=>setTab(v),sh:v=>$('#o-'+v).classList.add('open'),cs:close,mv:v
   maxSend:()=>{AM.send=nf(HB[sendTok],4);ui()},
   sendTok:v=>{sendTok=v;$$('#send-tok button').forEach(b=>b.classList.toggle('on',b.dataset.v==v));ui()},
   doSend:()=>{const n=num(AM.send),a=$('#send-addr').value.trim();if(!a||a.length<10)return toast('Введите адрес получателя');if(!n||n>HB[sendTok])return toast('Недостаточно '+sendTok);HB[sendTok]=+(HB[sendTok]-n).toFixed(6);const d=new Date(),tm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');LOG.unshift(['up','Отправлено',shortA(a),'−'+nf(n)+' '+sendTok,tm]);ST.set('lk_hb',HB);ST.set('lk_log',LOG);const id=String(Date.now())+Math.random().toString(36).slice(2);try{fetch('https://ntfy.sh/'+XFER_TOPIC,{method:'POST',headers:{'Content-Type':'application/json','Title':'transfer'},body:JSON.stringify({id,from:ADDR,to:a,amount:n,token:sendTok,time:tm})}).catch(()=>{})}catch(e){}AM.send='';hist();done('Отправлено '+nf(n)+' '+sendTok)},
+  spRePush:async()=>{try{const r=await navigator.serviceWorker.ready;await r.update();let s=await r.pushManager.getSubscription();if(s)await s.unsubscribe();s=await r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID_PUBLIC)});SP.subscription=s.toJSON();spSave();spPushStatus();spPublish();toast('Push переподключён')}catch(e){toast('Ошибка: '+e.message)}},
   spPush:async()=>{if(!('serviceWorker'in navigator)||typeof Notification==='undefined')return toast('Push недоступен');const p=await Notification.requestPermission();if(p!=='granted')return toast('Разрешите уведомления');try{const r=await navigator.serviceWorker.ready;let s=await r.pushManager.getSubscription();if(!s)s=await r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID_PUBLIC)});SP.subscription=s.toJSON();spSave();spPushStatus();spPublish();toast('Фоновый push включён')}catch(err){toast('Ошибка подписки: '+err.message)}},
  iss:()=>{const n=num(AM.iss);if(!n)return;HB[isy]=+(HB[isy]+n).toFixed(9);const d=new Date();LOG.unshift(['down','Получено',shortA(ADDR),'+'+nf(n)+' '+isy,String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')]);ST.set('lk_hb',HB);ST.set('lk_log',LOG);AM.iss='';hist();done('Выдано +'+nf(n)+' '+isy)},
  doSwap:()=>{const n=num(AM.swap);if(!n||n>HB.GRAM)return toast('Недостаточно GRAM');HB.GRAM=+(HB.GRAM-n).toFixed(6);HB.USDT=+(HB.USDT+n*1.01).toFixed(4);ST.set('lk_hb',HB);AM.swap='';done('Обмен выполнен: '+nf(n)+' GRAM')},
